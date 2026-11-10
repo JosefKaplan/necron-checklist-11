@@ -10,7 +10,7 @@ Personal use only. Rules belong to Games Workshop; data comes from Wahapedia.
 |---|---|
 | `index.html` | The whole app: HTML, CSS and JS in one file. No build step, no dependencies. |
 | `tests/test_app.py` | Playwright smoke test with assertions (game flow, CP, limits, undo, Detachment Points, overview, saves, layout, data integrity). |
-| `README.md` | Short deploy guide for GitHub Pages. Keep it short and direct. |
+| `README.md` | Live link, short GitHub Pages deploy guide and the sources list. Keep it short and direct, and keep its Sources in sync with the one below. |
 | `.nojekyll` | Empty. Tells GitHub Pages to serve files as they are, without Jekyll. |
 | `.gitignore` | Ignores `.DS_Store`, `__pycache__/` and `.idea/`. |
 | `CLAUDE.md` | This file. |
@@ -143,6 +143,8 @@ The test runs a fresh browser profile at phone size (390×844, then 360×740), b
 
 ## Sources
 
-- Wahapedia, Necrons (11th edition): https://wahapedia.ru/wh40k11ed/factions/necrons
+- Wahapedia, Necrons (11th edition): https://wahapedia.ru/wh40k11ed/factions/necrons (army rule, detachments, Detachment Points, enhancements, stratagems)
+- Wahapedia, Core Rules (11th edition): https://wahapedia.ru/wh40k11ed/the-rules/core-rules/ (core stratagems, turn steps)
+- Wahapedia, Necrons datasheets: https://wahapedia.ru/wh40k11ed/factions/necrons/datasheets.html (unit abilities, Legends status)
 - Wahapedia data export (CSV, no API, attribution recommended): https://wahapedia.ru/wh40k11ed/the-rules/data-export
 - Warhammer Community, Xenos Faction Packs (DP budgets): https://www.warhammer-community.com/en-gb/articles/fchkklcq/new40k-download-new-xenos-faction-packs-today/
