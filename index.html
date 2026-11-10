@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Necron Turn Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Necrodermis: cool steel neutrals; gauss green marks your turn, ember marks the opponent's, dynastic gold is CP.
+     Layout: sticky tracker (round / turn / CP / phase) on top, one column of checklists, tab bar at the bottom. */
+  --bg: #edf1ef;
+  --surface: #ffffff;
+  --surface-2: #f4f7f5;
+  --ink: #15201b;
+  --muted: #56665f;
+  --line: #d3dcd7;
+  --mine: #0c7a53;
+  --mine-soft: #dcf0e7;
+  --opp: #b2421b;
+  --opp-soft: #f7e3da;
+  --on-turn: #ffffff;
+  --cp: #8e6210;
+  --cp-soft: #f4e9d1;
+  --warn: #9a5600;
+  --warn-soft: #fbecd6;
+  --s1: #1d6aad;
+  --s2: #7a4cc0;
+  --s3: #b23f7e;
+  --font-display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --radius: 10px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1311;
+    --surface: #151d1a;
+    --surface-2: #1b2622;
+    --ink: #e3ebe7;
+    --muted: #98a9a1;
+    --line: #29352f;
+    --mine: #45d09a;
+    --mine-soft: #15332a;
+    --opp: #f0895c;
+    --opp-soft: #3b231a;
+    --on-turn: #0b120f;
+    --cp: #e5b853;
+    --cp-soft: #382e16;
+    --warn: #f1b45c;
+    --warn-soft: #3a2b14;
+    --s1: #6fb2ef;
+    --s2: #b597ec;
+    --s3: #ec8ec0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1311;
+  --surface: #151d1a;
+  --surface-2: #1b2622;
+  --ink: #e3ebe7;
+  --muted: #98a9a1;
+  --line: #29352f;
+  --mine: #45d09a;
+  --mine-soft: #15332a;
+  --opp: #f0895c;
+  --opp-soft: #3b231a;
+  --on-turn: #0b120f;
+  --cp: #e5b853;
+  --cp-soft: #382e16;
+  --warn: #f1b45c;
+  --warn-soft: #3a2b14;
+  --s1: #6fb2ef;
+  --s2: #b597ec;
+  --s3: #ec8ec0;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+  --turn: var(--mine);
+  --turn-soft: var(--mine-soft);
+}
+body[data-turn="opp"] { --turn: var(--opp); --turn-soft: var(--opp-soft); }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--turn); outline-offset: 2px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p { margin: 0; }
+
+/* ---------- Tracker ---------- */
+.tracker {
+  position: sticky; top: 0; z-index: 10;
+  background: var(--surface);
+  border-top: 4px solid var(--turn);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 16px 10px;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px;
+}
+.tr-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.det-chip {
+  border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px;
+  padding: 4px 10px; font-size: 13px; font-weight: 500; max-width: 48%; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tr-controls { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+.stepper { display: flex; align-items: center; gap: 4px; }
+.stepper .lbl { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+.stepper button {
+  width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--surface-2); font-size: 18px; line-height: 1; display: grid; place-items: center;
+}
+.stepper .num { font-family: var(--font-display); font-weight: 700; font-size: 22px; min-width: 1.4ch; text-align: center; font-variant-numeric: tabular-nums; }
+.stepper .of { font-size: 13px; color: var(--muted); margin-left: -3px; margin-right: 2px; }
+.stepper.cp .num { color: var(--cp); }
+.stepper.cp { background: var(--cp-soft); border-radius: 10px; padding: 2px 4px 2px 8px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: var(--surface-2); }
+.seg button { border: 0; background: transparent; padding: 7px 11px; font-weight: 500; font-size: 14px; }
+.seg button[aria-pressed="true"] { background: var(--turn); color: var(--on-turn); font-weight: 600; }
+.seg.neutral button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.tr-phases { display: flex; gap: 8px; align-items: stretch; }
+.phase-list { display: flex; gap: 4px; overflow-x: auto; flex: 1 1 auto; min-width: 0; scrollbar-width: none; }
+.phase-list::-webkit-scrollbar { display: none; }
+.phase-list button {
+  flex: 0 0 auto; border: 1px solid var(--line); background: var(--surface-2);
+  border-radius: 8px; padding: 6px 10px; font-size: 13px; font-weight: 500; color: var(--muted);
+}
+.phase-list button[aria-current="step"] { background: var(--turn-soft); border-color: var(--turn); color: var(--ink); font-weight: 600; }
+.next {
+  flex: 0 0 auto; border: 0; border-radius: 8px; padding: 6px 12px;
+  background: var(--turn); color: var(--on-turn); font-weight: 600; font-size: 14px; white-space: nowrap;
+}
+.next:disabled { opacity: .5; cursor: default; }
+
+/* ---------- Main ---------- */
+main { max-width: 720px; margin: 0 auto; padding: 16px 16px calc(84px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+.ctx { display: grid; gap: 4px; }
+.ctx h1 { font-size: 26px; font-weight: 700; line-height: 1.15; }
+.ctx h1 .who { color: var(--turn); }
+.ctx .sub { color: var(--muted); font-size: 14px; }
+.block { display: grid; gap: 10px; }
+.block h2 { font-size: 15px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; display: flex; align-items: baseline; gap: 8px; color: var(--ink); }
+.block h2 .count { font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--muted); font-variant-numeric: tabular-nums; }
+.block > .hint { color: var(--muted); font-size: 13px; }
+.empty { color: var(--muted); font-size: 14px; padding: 10px 12px; border: 1px dashed var(--line); border-radius: var(--radius); }
+.win { font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+
+/* checklist */
+.checks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.check {
+  display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px;
+}
+.check input { width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--turn); }
+.check label { display: grid; gap: 2px; cursor: pointer; }
+.check .src { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.check.is-done { background: var(--surface-2); }
+.check.is-done .txt { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+.tag { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .03em; text-transform: none; border-radius: 999px; padding: 0 7px; border: 1px solid var(--line); color: var(--muted); }
+.tag.limit { border-color: var(--cp); color: var(--cp); }
+.tag.used { background: var(--surface-2); }
+.tag.warn { border-color: var(--warn); color: var(--warn); background: var(--warn-soft); }
+
+/* stratagem cards */
+.cards { display: grid; gap: 8px; }
+.strat {
+  background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--turn);
+  border-radius: var(--radius); padding: 10px 12px; display: grid; gap: 5px;
+}
+.strat.core { border-left-color: var(--line); }
+.strat.src-1 { border-left-color: var(--s1); }
+.strat.src-2 { border-left-color: var(--s2); }
+.strat.src-3 { border-left-color: var(--s3); }
+
+/* stratagem overview grid */
+.legend { display: flex; flex-wrap: wrap; gap: 6px; }
+.lg { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; background: var(--surface); }
+.sw { width: 10px; height: 10px; border-radius: 2px; background: var(--line); flex: 0 0 auto; }
+.sw.src-1 { background: var(--s1); } .sw.src-2 { background: var(--s2); } .sw.src-3 { background: var(--s3); } .sw.src-core { background: var(--muted); }
+.ov { display: grid; gap: 14px; }
+.ov-phase { display: grid; gap: 6px; }
+.ov-phase h2 { font-size: 15px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; display: flex; gap: 8px; align-items: baseline; }
+.ov-phase h2 .count { font-family: var(--font-body); font-size: 13px; font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--muted); }
+.ov-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+.ov-cell { display: grid; gap: 5px; align-content: start; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 7px; }
+.ov-cell.now { border-color: var(--turn); background: var(--turn-soft); }
+.ov-cap { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 4px; }
+.ov-cap .nowtag { color: var(--turn); }
+.ov-none { font-size: 13px; color: var(--muted); padding: 2px 2px 4px; }
+.ov-item {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1px 6px; align-items: baseline; text-align: left;
+  width: 100%; background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--muted);
+  border-radius: 7px; padding: 6px 7px;
+}
+.ov-item.src-1 { border-left-color: var(--s1); } .ov-item.src-2 { border-left-color: var(--s2); } .ov-item.src-3 { border-left-color: var(--s3); }
+.ov-item .cpb { font-size: 11.5px; padding: 0 5px; }
+.ov-item .nm { font-weight: 600; font-size: 13.5px; line-height: 1.25; overflow-wrap: anywhere; }
+.ov-item .wl { grid-column: 2; font-size: 11.5px; color: var(--muted); line-height: 1.3; }
+
+/* bottom sheet for one stratagem */
+.sheet-back { position: fixed; inset: 0; background: rgba(8, 12, 10, .45); z-index: 30; display: flex; align-items: flex-end; justify-content: center; }
+.sheet { background: var(--bg); width: 100%; max-width: 720px; max-height: 82%; overflow-y: auto; border-radius: 14px 14px 0 0; padding: 12px 16px calc(16px + env(safe-area-inset-bottom)); display: grid; gap: 10px; }
+.sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.sheet-head .meta { font-size: 13px; }
+.strat.is-used { opacity: .62; }
+.strat header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.strat h3 { font-size: 16px; font-weight: 600; letter-spacing: .01em; flex: 1 1 auto; min-width: 0; }
+.cpb { font-family: var(--font-display); font-weight: 700; font-size: 13px; color: var(--cp); background: var(--cp-soft); border-radius: 6px; padding: 1px 7px; font-variant-numeric: tabular-nums; }
+.meta { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: .02em; }
+.strat p b { font-weight: 600; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+.strat .when { color: var(--ink); }
+.strat footer { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 3px; }
+.strat footer a { font-size: 13px; color: var(--muted); }
+.use {
+  border: 0; border-radius: 8px; padding: 7px 14px; font-weight: 600; font-size: 14px;
+  background: var(--turn); color: var(--on-turn); min-height: 36px;
+}
+.use:disabled { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); cursor: default; }
+.kw { font-size: .86em; font-weight: 600; letter-spacing: .03em; }
+.tag.core { border-color: var(--ink); color: var(--ink); }
+.slots { display: flex; flex-wrap: wrap; gap: 4px; }
+.slots .tag { color: var(--ink); font-size: 12px; padding: 1px 8px; }
+.tag.jump { text-decoration: none; font-size: 13px; padding: 3px 10px; background: var(--surface); }
+.kwnote { font-size: 13px; color: var(--muted); }
+.dp { font-family: var(--font-display); font-weight: 700; font-size: 12px; color: var(--cp); background: var(--cp-soft); border-radius: 6px; padding: 1px 6px; margin: 0 6px; font-variant-numeric: tabular-nums; }
+.opt.off { opacity: .55; cursor: not-allowed; }
+.opt .fd { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.opt .why { display: block; font-size: 12px; font-weight: 600; color: var(--warn); margin-top: 4px; }
+.pips { display: flex; gap: 6px; }
+.pips span { width: 34px; height: 10px; border-radius: 3px; background: var(--surface); border: 1px solid var(--line); }
+.pips span.on { background: var(--cp); border-color: var(--cp); }
+.pips span.over { background: var(--opp); border-color: var(--opp); }
+.overline { font-size: 13px; font-weight: 600; color: var(--opp); }
+.setting .sm { font-size: 12px; color: var(--muted); }
+section[id^="sec-"] { scroll-margin-top: 170px; }
+.ab { font-size: .86em; font-weight: 600; white-space: nowrap; }
+
+.rules-note { font-size: 13px; color: var(--muted); background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px; }
+
+/* always on */
+.always { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.always li { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 9px 12px; display: grid; gap: 2px; }
+.always .src { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.always .nm { font-weight: 600; }
+
+/* log */
+.log-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.ghost { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 12px; font-weight: 500; font-size: 14px; }
+.ghost:disabled { opacity: .5; cursor: default; }
+.log { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 13px; }
+.log li { display: grid; grid-template-columns: 9.5em 1fr; gap: 8px; padding: 4px 0; border-bottom: 1px solid var(--line); }
+.log .at { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* army */
+.opts { display: grid; gap: 6px; }
+.opt {
+  display: grid; grid-template-columns: 24px 1fr; gap: 10px; align-items: start;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; cursor: pointer;
+}
+.opt input { width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--mine); }
+.opt .nm { font-weight: 600; }
+.opt .sm { font-size: 13px; color: var(--muted); }
+.opt.on { border-color: var(--mine); background: var(--mine-soft); }
+.custom-form { display: grid; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
+.custom-form label.f { font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.custom-form input[type="text"], .custom-form select {
+  width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); padding: 8px 10px; min-height: 38px;
+}
+.f-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.f-row > div { display: grid; gap: 4px; }
+.chk { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.chk input { width: 18px; height: 18px; accent-color: var(--mine); }
+.primary { border: 0; border-radius: 8px; padding: 9px 14px; background: var(--mine); color: var(--on-turn); font-weight: 600; justify-self: start; }
+.custom-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.custom-list li { display: flex; justify-content: space-between; gap: 10px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 12px; }
+.custom-list .sm { font-size: 12px; color: var(--muted); }
+.danger { border: 1px solid var(--opp); color: var(--opp); background: transparent; border-radius: 8px; padding: 8px 14px; font-weight: 600; justify-self: start; }
+.danger.armed { background: var(--opp); color: var(--on-turn); }
+.setting { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; }
+.about { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+.about a { color: inherit; }
+
+/* tab bar */
+.tabbar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+  background: var(--surface); border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+}
+.tabbar button { border: 0; background: transparent; padding: 8px 4px; border-radius: 8px; font-weight: 500; font-size: 14px; color: var(--muted); }
+.tabbar button[aria-current="page"] { color: var(--ink); background: var(--surface-2); font-weight: 600; box-shadow: inset 0 -2px 0 var(--turn); }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(70px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  background: var(--ink); color: var(--surface); padding: 8px 14px; border-radius: 999px; font-size: 14px; font-weight: 500;
+  opacity: 0; pointer-events: none; transition: opacity .2s; max-width: calc(100% - 32px); text-align: center; z-index: 20;
+}
+.toast.show { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .toast { transition: none; } }
+@media (max-width: 380px) {
+  .seg button { padding: 7px 8px; font-size: 13px; }
+  .f-row { grid-template-columns: 1fr; }
+  .ctx h1 { font-size: 23px; }
+}
+</style>
+</head>
+<body data-turn="mine">
+<header class="tracker" id="tracker"></header>
+<main id="main"></main>
+<nav class="tabbar" id="tabbar" aria-label="Views"></nav>
+<div id="sheet-root"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   DATA — summaries paraphrased from Wahapedia (Necrons, 11th ed., App v2.8.1,
+   Oct 2026) and 11th-edition core rules coverage. Checked 10 Nov 2026.
+   slot = "turn:phase"  turn: mine | opp | any   phase: command | movement |
+   shooting | charge | fight | end | any       w = start | during | react | end
+   ===================================================================== */
+const WAHA = "https://wahapedia.ru/wh40k11ed/factions/necrons";
+
+const PHASES = [
+  { id: "command", label: "Command" },
+  { id: "movement", label: "Movement" },
+  { id: "shooting", label: "Shooting" },
+  { id: "charge", label: "Charge" },
+  { id: "fight", label: "Fight" },
+  { id: "end", label: "End of turn" }
+];
+const WIN = {
+  start: { o: 0, label: "Start of phase" },
+  during: { o: 1, label: "During the phase" },
+  react: { o: 2, label: "In reaction" },
+  end: { o: 3, label: "End of phase" }
+};
+
+const S = (id, name, cp, type, slots, w, when, target, effect, x) =>
+  Object.assign({ id, name, cp, type, slots, w, when, target, effect }, x || {});
+
+const CORE = [
+  S("core-reroll", "Command Re-roll", 1, "Core", ["any:any"], "react",
+    "Any phase, just after you roll for an Advance, Charge, Damage, Hazard, Hit, Save or Wound roll, or for the number of attacks.",
+    "The unit or model that rolled.",
+    "Re-roll that roll. If several dice were rolled together, re-roll one of them (Charge rolls are re-rolled in full)."),
+  S("core-bravery", "Insane Bravery", 1, "Core", ["mine:command"], "during",
+    "Battle-shock step of your Command phase, just before you take a Battle-shock test for one of your units.",
+    "That unit.",
+    "The test is passed automatically.", { limit: "battle" }),
+  S("core-overwatch", "Fire Overwatch", 1, "Core", ["opp:movement"], "end",
+    "End of your opponent's Movement phase.",
+    "One of your unengaged units (not TITANIC).",
+    "Your unit shoots using snap shooting: one visible enemy unit within 24\", hits only on unmodified 6s (never Critical Hits), no Hit re-rolls."),
+  S("core-ingress", "Rapid Ingress", 1, "Core", ["opp:movement"], "end",
+    "End of your opponent's Movement phase.",
+    "One of your units in Strategic Reserves (not AIRCRAFT).",
+    "Your unit makes an ingress move and arrives on the battlefield.",
+    { restr: "Not in the first battle round." }),
+  S("core-heroic", "Heroic Intervention", 1, "Core", ["opp:charge"], "end",
+    "End of your opponent's Charge phase.",
+    "One of your unengaged units within 12\" of an enemy unit (a VEHICLE only if it is a CHARACTER or WALKER).",
+    "Resolve a charge with it. Pick a mode before the charge roll. Leap to Defend: you can only target enemy units that made a charge move this phase. Into the Fray (+1CP): a charge roll above 6 counts as 6, and you can target any enemy units within 6\".",
+    { restr: "Into the Fray costs 1CP more (2CP in total)." }),
+  S("core-challenge", "Epic Challenge", 1, "Core", ["any:fight"], "during",
+    "Fight phase, just after one of your CHARACTER units is selected to fight.",
+    "That CHARACTER unit.",
+    "Pick one CHARACTER model in it: its melee weapons gain [PRECISION] until the end of the phase."),
+  S("core-counter", "Counteroffensive", 2, "Core", ["opp:fight"], "react",
+    "Fight step of your opponent's Fight phase, just after an enemy unit has resolved its attacks.",
+    "One of your units that is eligible to fight.",
+    "Until the end of the phase your unit has Fights First, and it must be the next unit you select to fight."),
+  S("core-crush", "Crushing Impact", 1, "Core", ["mine:charge"], "react",
+    "Your Charge phase, just after one of your MONSTER or VEHICLE units ends a charge move.",
+    "That unit.",
+    "Pick an enemy unit it is engaged with and one of your models engaged with it. Roll D6 equal to that model's Toughness: each 5+ deals 1 mortal wound to the enemy (max 6), each 1 deals 1 mortal wound to your unit."),
+  S("core-explosives", "Explosives", 1, "Core", ["mine:shooting"], "during",
+    "Your Shooting phase.",
+    "One of your unengaged EXPLOSIVES or GRENADES units that is eligible to shoot and didn't Advance this turn.",
+    "Pick one EXPLOSIVES/GRENADES model in it and one unengaged enemy unit within 8\" that it can see. Roll six D6: each 4+ deals 1 mortal wound to that enemy unit.",
+    { keyword: "EXPLOSIVES or GRENADES" }),
+  S("core-smoke", "Smokescreen", 1, "Core", ["opp:shooting"], "start",
+    "Start of your opponent's Shooting phase.",
+    "One of your SMOKE units.",
+    "Until the end of the phase, attacks against your SMOKE unit, or against a unit the attacker can't fully see because of your SMOKE models, are against a target with the Benefit of Cover.",
+    { keyword: "SMOKE" })
+];
+
+const D = (id, name, rule, ruleReminders, enh, strats) => ({ id, name, rule, ruleReminders, enh, strats });
+const R = (id, name, slots, w, text, x) => Object.assign({ id, name, slots, w, text }, x || {});
+const E = (id, name, who, text, x) => Object.assign({ id, name, who, text }, x || {});
+
+const DETACHMENTS = [
+  D("awakened", "Awakened Dynasty",
+    { name: "Command Protocols", text: "While a NECRONS CHARACTER is leading a unit, models in that unit add 1 to Hit rolls." },
+    [],
+    [
+      E("e-veil", "Veil of Darkness", "NECRONS model", "Once per battle (per army), at the end of your opponent's turn, if the bearer's unit is unengaged: put it into Strategic Reserves. It has Deep Strike until the start of your next Shooting phase and must make an ingress move in your next Movement phase.", { slots: ["opp:end"], w: "end", limit: "battle" }),
+      E("e-casket", "Nether-realm Casket", "NECRONS model", "While the bearer leads a unit, models in that unit have Stealth."),
+      E("e-subjugator", "Phasal Subjugator (Aura)", "NECRONS model", "Friendly NECRONS units (not CHARACTERS) within 6\" add 1 to Hit rolls."),
+      E("e-dermal", "Enaegic Dermal Bond", "NECRONS model", "The bearer has Feel No Pain 4+.")
+    ],
+    [
+      S("ad-revenant", "Protocol of the Eternal Revenant", 1, "Epic Deed", ["any:any"], "react",
+        "Any phase, just after one of your NECRONS INFANTRY CHARACTER models is destroyed.",
+        "That model (you can use this even though it was just destroyed).",
+        "At the end of the phase, set it back up near where it died (not in Engagement Range) as its own unit, with half its wounds.",
+        { restr: "Each model only once per battle." }),
+      S("ad-undying", "Protocol of the Undying Legions", 1, "Strategic Ploy", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, just after an enemy unit has resolved its attacks.",
+        "One of your NECRONS units that lost models to those attacks.",
+        "Its Reanimation Protocols activate and reanimate D3 wounds (D3+1 if a NECRONS CHARACTER leads it)."),
+      S("ad-hungry", "Protocol of the Hungry Void", 1, "Battle Tactic", ["any:fight"], "during",
+        "Fight phase.",
+        "One NECRONS unit that hasn't been selected to fight this phase.",
+        "+1 Strength to its melee weapons this phase. If a CHARACTER leads it, they also get +1 AP (this doesn't stack with other AP improvements)."),
+      S("ad-storm", "Protocol of the Sudden Storm", 1, "Strategic Ploy", ["mine:movement"], "during",
+        "Your Movement phase.",
+        "One NECRONS unit.",
+        "Its ranged weapons gain [ASSAULT] until the end of the turn. If a CHARACTER leads it, you can re-roll its Advance rolls this phase."),
+      S("ad-tyrant", "Protocol of the Conquering Tyrant", 1, "Battle Tactic", ["mine:shooting"], "during",
+        "Your Shooting phase.",
+        "One NECRONS unit that hasn't been selected to shoot this phase.",
+        "Re-roll Hit rolls of 1 against targets within half range. If a CHARACTER leads it, re-roll the Hit roll instead."),
+      S("ad-vengeful", "Protocol of the Vengeful Stars", 2, "Strategic Ploy", ["opp:shooting"], "react",
+        "Your opponent's Shooting phase, just after an enemy unit destroys one of your NECRONS units.",
+        "One NECRONS CHARACTER unit that was within 6\" of the destroyed unit.",
+        "Once the enemy unit has finished its attacks, your unit shoots as if it were your Shooting phase, targeting only that enemy unit.")
+    ]),
+
+  D("annihilation", "Annihilation Legion",
+    { name: "Annihilation Protocol", text: "DESTROYER CULT and FLAYED ONES units can re-roll Charge rolls and add 1 to the Charge roll if a target is Below Half-strength. DESTROYER CULT ranged attacks get +1 AP against the closest eligible target." },
+    [
+      R("r-anni-charge", "Annihilation Protocol", ["any:charge"], "during", "Each time a DESTROYER CULT or FLAYED ONES unit declares a charge (also a Heroic Intervention or Unnatural Aggression in your opponent's turn): re-roll the Charge roll, +1 if a charge target is Below Half-strength."),
+      R("r-anni-shoot", "Annihilation Protocol", ["mine:shooting"], "during", "DESTROYER CULT ranged attacks: +1 AP against the closest eligible target.")
+    ],
+    [
+      E("e-madness", "Eternal Madness", "NECRONS model", "In the Fight phase, each time a model in the bearer's unit is destroyed before it has fought, roll a D6: on a 4+ it fights after the attacking unit, then is removed.", { slots: ["any:fight"], w: "react" }),
+      E("e-ingrained", "Ingrained Superiority", "NECRONS model", "Critical Wounds scored by the bearer's unit get +1 AP."),
+      E("e-reaper", "Soulless Reaper", "DESTROYER CULT model", "When an engaged enemy unit tries to Fall Back from the bearer's unit, roll a D6: on a 3+ it must Remain Stationary instead.", { slots: ["opp:movement"], w: "react" }),
+      E("e-nightmare", "Eldritch Nightmare", "DESTROYER CULT model", "Start of the Fight phase: each enemy unit within Engagement Range of the bearer takes a Battle-shock test.", { slots: ["any:fight"], w: "start" })
+    ],
+    [
+      S("al-masks", "Masks of Death", 1, "Strategic Ploy", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, just after an enemy unit has selected its targets.",
+        "One DESTROYER CULT or FLAYED ONES unit that was selected as a target.",
+        "Attacks against your unit get -1 to Hit until the end of the phase."),
+      S("al-spoor", "The Spoor of Frailty", 1, "Battle Tactic", ["mine:shooting", "any:fight"], "during",
+        "Your Shooting phase or the Fight phase.",
+        "One DESTROYER CULT or FLAYED ONES unit that hasn't shot or fought this phase.",
+        "+1 to Hit against units below Starting Strength; also +1 to Wound if the target is Below Half-strength."),
+      S("al-murderous", "Murderous Reanimation", 1, "Battle Tactic", ["any:fight"], "react",
+        "Fight phase.",
+        "One DESTROYER CULT or FLAYED ONES unit that has just destroyed an enemy unit, or just brought an enemy unit Below Half-strength.",
+        "Its Reanimation Protocols activate."),
+      S("al-pitiless", "Pitiless Hunters", 1, "Battle Tactic", ["any:fight"], "during",
+        "Fight phase.",
+        "One DESTROYER CULT or FLAYED ONES unit that hasn't fought this phase.",
+        "Its Pile-in and Consolidation moves can be up to 6\" instead of 3\"."),
+      S("al-cruelty", "Blood-Fuelled Cruelty", 1, "Battle Tactic", ["opp:movement"], "react",
+        "Your opponent's Movement phase, just after an enemy unit ends a Fall Back move.",
+        "One DESTROYER CULT or FLAYED ONES unit that started the phase engaged with that enemy unit.",
+        "Roll a D6: on 2–5 the enemy suffers D3 mortal wounds, on a 6 it suffers 3. Then your unit makes a Normal move, ending as close as possible to it."),
+      S("al-ire", "Insanity's Ire", 1, "Strategic Ploy", ["opp:shooting"], "react",
+        "Your opponent's Shooting phase, just after an enemy unit has shot one of your unengaged DESTROYER CULT or FLAYED ONES units.",
+        "That unit.",
+        "Your unit makes a surge move of up to D6\".")
+    ]),
+
+  D("canoptek", "Canoptek Court",
+    { name: "Power Matrix", text: "Your deployment zone is always in your Power Matrix. CRYPTEK and CANOPTEK units re-roll Hit rolls of 1, or the whole Hit roll if they are wholly within your Power Matrix." },
+    [
+      R("r-matrix", "Power Matrix", ["any:any"], "start", "Check your Power Matrix: if you control at least half the objectives in No Man's Land (or in the enemy deployment zone), that area joins it until the end of the phase.")
+    ],
+    [
+      E("e-sanctum", "Dimensional Sanctum", "CRYPTEK model", "Models in the bearer's unit have Infiltrators."),
+      E("e-fulcrum", "Hyperphasic Fulcrum", "CRYPTEK model", "While the bearer leads a unit wholly within your Power Matrix, re-roll Wound rolls of 1."),
+      E("e-autodiv", "Autodivinator", "CRYPTEK model", "When your opponent gains CP from an ability, roll a D6: on a 2+ you gain 1CP too (CP from army rules doesn't count).", { slots: ["any:any"], w: "react" }),
+      E("e-tesla", "Metalodermal Tesla Weave", "CRYPTEK model", "Once per phase, when an enemy unit picks the bearer's unit as a charge target, roll a D6: on 2–5 it suffers D3 mortal wounds, on a 6 it suffers 3.", { slots: ["any:charge"], w: "react" })
+    ],
+    [
+      S("cc-curse", "Curse of the Cryptek", 1, "Battle Tactic", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, just after an enemy unit has shot or fought.",
+        "One of your CRYPTEK models destroyed by those attacks (usable even though it was just destroyed).",
+        "Until the end of the battle, your CANOPTEK units' attacks against that enemy unit get +1 to Hit and +1 to Wound."),
+      S("cc-cynosure", "Cynosure of Eradication", 2, "Battle Tactic", ["mine:shooting", "any:fight"], "start",
+        "Start of your Shooting phase or the start of the Fight phase.",
+        "One CRYPTEK or CANOPTEK unit wholly within your Power Matrix.",
+        "Its weapons gain [DEVASTATING WOUNDS] until the end of the phase."),
+      S("cc-solar", "Solar Pulse", 1, "Strategic Ploy", ["mine:shooting"], "start",
+        "Start of your Shooting phase.",
+        "One of your CRYPTEK models.",
+        "Pick an objective within 18\" of it: until the end of the phase, your NECRONS weapons gain [IGNORES COVER] against units within range of that objective."),
+      S("cc-reactive", "Reactive Subroutines", 1, "Strategic Ploy", ["opp:movement"], "react",
+        "Your opponent's Movement phase, just after an enemy unit ends a Normal, Advance or Fall Back move.",
+        "One CANOPTEK unit within 8\" of that enemy unit.",
+        "Your unit makes a Normal move of up to 6\"."),
+      S("cc-shift", "Countertemporal Shift", 1, "Strategic Ploy", ["opp:shooting"], "react",
+        "Your opponent's Shooting phase, just after an enemy unit has selected its targets.",
+        "One CANOPTEK unit that was selected as a target.",
+        "Until the end of the phase, ranged attacks can only target your unit from within 18\"."),
+      S("cc-facade", "Suboptimal Facade", 1, "Strategic Ploy", ["opp:charge"], "react",
+        "Your opponent's Charge phase, just after an enemy unit has declared a charge.",
+        "One CANOPTEK unit that is a target of that charge and wholly within your Power Matrix.",
+        "Its Reanimation Protocols activate.")
+    ]),
+
+  D("obeisance", "Obeisance Phalanx",
+    { name: "Worthy Foes", text: "In your Command phase, pick one enemy unit. Until your next Command phase, NOBLE, LYCHGUARD and TRIARCH attacks against it get +1 to Wound." },
+    [
+      R("r-worthy", "Worthy Foes", ["mine:command"], "during", "Pick one enemy unit: NOBLE, LYCHGUARD and TRIARCH attacks against it get +1 to Wound until your next Command phase.")
+    ],
+    [
+      E("e-honour", "Honourable Combatant", "OVERLORD model", "When the bearer's unit destroys an enemy CHARACTER, your opponent loses 1CP (if they have any)."),
+      E("e-unflinching", "Unflinching Will", "OVERLORD model", "The bearer's melee weapons have [PRECISION] and [ANTI-INFANTRY 5+]."),
+      E("e-noble", "Warrior Noble", "OVERLORD model", "Melee attacks against the bearer's unit get -1 to Hit."),
+      E("e-conqueror", "Eternal Conqueror", "OVERLORD model", "The bearer's unit can re-roll Hit rolls against enemy units within range of an objective.")
+    ],
+    [
+      S("op-nigh", "Your Time Is Nigh", 1, "Epic Deed", ["any:any"], "react",
+        "Any phase, just after your opponent's WARLORD is destroyed.",
+        "Your NECRONS WARLORD.",
+        "Until the end of the battle, enemy Battle-shock and Leadership tests get -1."),
+      S("op-artifice", "Enslaved Artifice", 1, "Battle Tactic", ["mine:shooting", "any:fight"], "during",
+        "Your Shooting phase or the Fight phase.",
+        "One NECRONS unit (not TITANIC) that hasn't shot or fought this phase.",
+        "Unmodified Hit rolls of 5+ score a Critical Hit until the end of the phase."),
+      S("op-nano", "Nanoassembly Protocols", 1, "Battle Tactic", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, just after an enemy unit has selected its targets.",
+        "One NECRONS VEHICLE unit that was selected as a target.",
+        "Each attack allocated to your unit's models gets -1 Damage until the end of the phase."),
+      S("op-sentinels", "Sentinels of Eternity", 1, "Epic Deed", ["any:fight"], "react",
+        "Fight phase, just after an enemy unit has selected its targets.",
+        "One LYCHGUARD or TRIARCH PRAETORIANS unit that was selected as a target.",
+        "Until the end of the phase, each destroyed model that hasn't fought rolls a D6: on a 4+ it fights after the attacking unit, then is removed."),
+      S("op-rival", "Suffer No Rival", 1, "Battle Tactic", ["any:fight"], "during",
+        "Fight phase.",
+        "One LYCHGUARD or TRIARCH unit that hasn't fought this phase.",
+        "Its melee weapons gain [PRECISION] until the end of the phase."),
+      S("op-territorial", "Territorial Obsession", 1, "Strategic Ploy", ["mine:command"], "during",
+        "Your Command phase.",
+        "One LYCHGUARD or TRIARCH unit.",
+        "Until your next Command phase, +1 OC per model (+3 for VEHICLE models).")
+    ]),
+
+  D("hypercrypt", "Hypercrypt Legion",
+    { name: "Hyperphasing", text: "At the end of your opponent's turn, you can put unengaged NECRONS units into Strategic Reserves: 1 unit at Incursion, 2 at Strike Force, 3 at Onslaught." },
+    [
+      R("r-hyper", "Hyperphasing", ["opp:end"], "end", "Pick up to {hyper} unengaged NECRONS units and put them into Strategic Reserves.")
+    ],
+    [
+      E("e-overseer", "Dimensional Overseer", "NECRONS model", "Hyperphasing: pick 1 extra unit while the bearer is on the battlefield or in Strategic Reserves.", { slots: ["opp:end"], w: "end" }),
+      E("e-arisen", "Arisen Tyrant", "NECRONS model", "The bearer's unit re-rolls Hit rolls of 1; if it was set up this turn, it can re-roll the Hit roll instead."),
+      E("e-node", "Hyperspatial Transfer Node", "NECRONS model", "When the bearer's unit Advances, don't roll: add 6\" to its Move until the end of the phase."),
+      E("e-osteo", "Osteoclave Fulcrum", "NECRONS model", "The bearer's unit has Deep Strike.")
+    ],
+    [
+      S("hl-recall", "Hyperphasic Recall", 2, "Strategic Ploy", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, just after an enemy unit has shot or fought.",
+        "One NECRONS INFANTRY unit that lost models to those attacks, and one of your MONOLITHS.",
+        "Remove your unit and set it up again wholly within 6\" of the Monolith, not within Engagement Range of enemy units."),
+      S("hl-deflection", "Quantum Deflection", 1, "Wargear", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, just after an enemy unit has selected its targets.",
+        "One NECRONS VEHICLE unit that was selected as a target.",
+        "Its models have a 4+ invulnerable save until the end of the phase."),
+      S("hl-crypts", "Reanimation Crypts", 1, "Strategic Ploy", ["mine:command"], "during",
+        "Your Command phase.",
+        "Your NECRONS WARLORD.",
+        "Each of your NECRONS units in Reserves activates its Reanimation Protocols."),
+      S("hl-precision", "Cosmic Precision", 1, "Strategic Ploy", ["mine:movement"], "during",
+        "Your Movement phase, when a unit arrives with an ingress move.",
+        "One NECRONS unit (not MONSTER) arriving this phase.",
+        "Set it up anywhere more than 6\" horizontally away from all enemy models.",
+        { restr: "That unit can't declare a charge this turn." }),
+      S("hl-corridor", "Dimensional Corridor", 2, "Strategic Ploy", ["mine:charge"], "during",
+        "Your Charge phase.",
+        "One NECRONS unit set up this turn through the Eternity Gate of a MONOLITH that started the turn on the battlefield.",
+        "Your unit is eligible to declare a charge this phase."),
+      S("hl-damping", "Entropic Damping", 1, "Wargear", ["opp:shooting"], "react",
+        "Your opponent's Shooting phase, just after an enemy unit has selected its targets.",
+        "One of your TITANIC models that was targeted and is within 18\" of the attacking unit.",
+        "The attacking unit's weapons gain [HAZARDOUS] until the end of the phase.")
+    ]),
+
+  D("starshatter", "Starshatter Arsenal",
+    { name: "Relentless Onslaught", text: "NECRONS models (not MONSTERS) add 1 to Hit rolls against units within range of an objective. Ranged weapons on NECRONS VEHICLE and MOUNTED models (not TITANIC) have [ASSAULT]." },
+    [],
+    [
+      E("e-majesty", "Dread Majesty (Aura)", "OVERLORD or CATACOMB COMMAND BARGE", "Friendly NECRONS units (not MONSTER or TITANIC) within 6\" re-roll Hit and Wound rolls of 1."),
+      E("e-nebulo", "Miniaturised Nebuloscope", "NECRONS model", "Ranged weapons in the bearer's unit have [IGNORES COVER]."),
+      E("e-demanding", "Demanding Leader", "NECRONS model", "Pick a NECRONS VEHICLE or MOUNTED unit (not TITANIC) within 6\": it can shoot in a turn it Fell Back, until your next Command phase.", { slots: ["mine:command"], w: "during" }),
+      E("e-chrono", "Chrono-impedance Fields", "NECRONS model", "Pick a NECRONS VEHICLE or MOUNTED unit (not TITANIC) within 6\": attacks allocated to it get -1 Damage until your next Command phase.", { slots: ["mine:command"], w: "during" })
+    ],
+    [
+      S("sa-reclamation", "Merciless Reclamation", 2, "Battle Tactic", ["mine:shooting", "any:fight"], "during",
+        "Your Shooting phase or the Fight phase.",
+        "One NECRONS unit (not MONSTER or TITANIC) that hasn't shot or fought this phase.",
+        "+1 to Wound against targets within range of an objective until the end of the phase."),
+      S("sa-unyielding", "Unyielding Forms", 2, "Battle Tactic", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, just after an enemy unit has selected its targets.",
+        "One NECRONS VEHICLE or MOUNTED unit (not TITANIC) that was selected as a target.",
+        "Attacks with a Strength higher than your unit's Toughness get -1 to Wound until the end of the phase."),
+      S("sa-chronoshift", "Chronoshift", 1, "Strategic Ploy", ["mine:movement"], "during",
+        "Your Movement phase.",
+        "One NECRONS VEHICLE or MOUNTED unit (not TITANIC) that hasn't moved yet this phase.",
+        "If it Advances this phase, don't roll: add 6\" to its Move."),
+      S("sa-tunnel", "Dimensional Tunnel", 1, "Strategic Ploy", ["mine:movement"], "during",
+        "Your Movement phase.",
+        "One NECRONS VEHICLE or MOUNTED unit (not TITANIC).",
+        "Until the end of the phase, its models can move horizontally through models and terrain features."),
+      S("sa-servitude", "Endless Servitude", 1, "Strategic Ploy", ["mine:fight"], "end",
+        "End of your Fight phase.",
+        "One NECRONS unit (not MONSTER or TITANIC) within range of an objective you control.",
+        "Its Reanimation Protocols activate."),
+      S("sa-reposition", "Reactive Reposition", 1, "Strategic Ploy", ["opp:shooting"], "react",
+        "Your opponent's Shooting phase, just after an enemy unit has shot.",
+        "One NECRONS unit (not MONSTER or TITANIC) that was targeted by those attacks.",
+        "Your unit makes a Normal move of up to D6\".")
+    ]),
+
+  D("cryptek", "Cryptek Conclave",
+    { name: "Technosorcerous Augmentations", text: "Ranged weapons on CRYPTEK models have [ASSAULT]. When a CRYPTEK unit is selected to shoot, its ranged weapons gain one ability of your choice until the end of the phase." },
+    [
+      R("r-techno", "Technosorcerous Augmentations", ["mine:shooting"], "during", "When a CRYPTEK unit is selected to shoot, pick one for its ranged weapons: [ANTI-INFANTRY 3+], [ANTI-MOUNTED 4+], [ASSAULT], [HEAVY] or [IGNORES COVER].")
+    ],
+    [
+      E("e-abacus", "Quantum Abacus", "NECRONS model", "Each time you target the bearer's unit with a Stratagem, roll a D6 (+1 if it's within range of an objective): on a 4+ you gain 1CP.", { slots: ["any:any"], w: "react" }),
+      E("e-atomic", "Atomic Disintegrators", "CRYPTEK model", "Technosorcerous Augmentations for the bearer's unit can also pick [ANTI-MONSTER 5+] or [ANTI-VEHICLE 5+]."),
+      E("e-gauntlet", "Gauntlet of Compression", "NECRONS model", "Ranged weapons in the bearer's unit get +6\" Range."),
+      E("e-bolas", "Gravitic Bolas", "CRYPTEK model", "After the bearer shoots, one enemy unit it hit (not TITANIC) is pinned until your next turn: -2 Move and -2 to Charge rolls.", { slots: ["mine:shooting"], w: "react" })
+    ],
+    [
+      S("ck-molecular", "Molecular Targeting", 1, "Battle Tactic", ["mine:shooting", "any:fight"], "during",
+        "Your Shooting phase or the Fight phase.",
+        "One NECRONS unit that hasn't shot or fought this phase.",
+        "Ignore all modifiers to BS, WS and Hit rolls until the end of the phase. CRYPTEK units also ignore Wound roll modifiers."),
+      S("ck-microscarab", "Microscarab Swarm", 1, "Wargear", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, just after an enemy unit has selected its targets.",
+        "One CRYPTEK INFANTRY unit that was selected as a target.",
+        "Until the end of the phase: if your unit has the NECRON WARRIORS keyword, its models have a 5+ invulnerable save; if it has the IMMORTALS keyword, a 4+."),
+      S("ck-animus", "Animus Curse", 1, "Wargear", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, just after an enemy unit has shot or fought.",
+        "One of your CRYPTEK models destroyed by those attacks (usable even though it was just destroyed).",
+        "Until the end of the battle, NECRONS models can re-roll Hit rolls against that enemy unit."),
+      S("ck-synergy", "Synergistic Empowerment", 1, "Strategic Ploy", ["mine:shooting"], "start",
+        "Start of your Shooting phase.",
+        "One CRYPTEK unit.",
+        "Pick a friendly NECRONS model (not MONSTER or VEHICLE) within 12\" of a CRYPTEK in your unit: it gains the CRYPTEK keyword until the end of the phase."),
+      S("ck-untapped", "Untapped Power", 1, "Battle Tactic", ["mine:shooting"], "during",
+        "Your Shooting phase.",
+        "One CRYPTEK unit that hasn't shot this phase.",
+        "When it shoots this phase, pick one extra Technosorcerous Augmentations ability."),
+      S("ck-syphon", "Potentiality Syphon", 1, "Strategic Ploy", ["opp:command"], "during",
+        "Your opponent's Command phase.",
+        "One NECRONS unit within range of an objective.",
+        "Its Reanimation Protocols activate. A CRYPTEK unit reanimates 1 extra wound.")
+    ]),
+
+  D("cursed", "Cursed Legion",
+    { name: "Cold Fervour", text: "DESTROYER CULT models add 2 to the Strength of their weapons. The first time each turn a DESTROYER CULT unit destroys an enemy unit or leaves it Below Half-strength, your other NECRONS models (not DESTROYER CULT, MONSTER or TITANIC) add 2 to weapon Strength until the end of the turn." },
+    [
+      R("r-cold", "Cold Fervour", ["mine:shooting", "any:fight"], "react", "First time this turn a DESTROYER CULT unit destroys an enemy unit or leaves it Below Half-strength: your other NECRONS models get +2 Strength until the end of the turn.")
+    ],
+    [
+      E("e-ankh", "Destroyer Ankh", "CATACOMB COMMAND BARGE or OVERLORD", "The bearer gains DESTROYER CULT; its unit gets +2\" Move and the bearer gets +2 melee Attacks."),
+      E("e-murdermind", "Murdermind", "CRYPTEK model", "The bearer gains DESTROYER CULT and +3\" Move, and can be attached as a Support to OPHYDIAN, SKORPEKH, LOKHUST or LOKHUST HEAVY DESTROYERS."),
+      E("e-nekrosor", "Mark of the Nekrosor", "DESTROYER CULT model", "The bearer's unit adds 1 to Hit rolls."),
+      E("e-circlet", "Cursed Circlet", "DESTROYER CULT model", "In your opponent's Shooting phase, after an enemy unit has shot, if those attacks destroyed a model in the bearer's unit, the unit can make a surge move of up to D6\".", { slots: ["opp:shooting"], w: "react" })
+    ],
+    [
+      S("cl-methodical", "Methodical Murder", 1, "Battle Tactic", ["mine:shooting", "any:fight"], "during",
+        "Your Shooting phase or the Fight phase.",
+        "One NECRONS unit (not MONSTER or VEHICLE) that hasn't shot or fought this phase.",
+        "Its weapons gain [SUSTAINED HITS 1] until the end of the phase."),
+      S("cl-image", "Image of Death", 1, "Battle Tactic", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, just after an enemy unit has selected its targets.",
+        "One DESTROYER CULT unit that was selected as a target.",
+        "Attacks against your unit get -1 to Hit until the end of the phase."),
+      S("cl-mortis", "Mortis Protocols", 1, "Strategic Ploy", ["mine:shooting", "any:fight"], "react",
+        "Your Shooting phase or the Fight phase, just after the first time this turn one of your DESTROYER CULT units destroys an enemy unit.",
+        "One friendly NECRONS unit (not MONSTER or VEHICLE) within 9\" of that DESTROYER CULT unit.",
+        "Its Reanimation Protocols activate."),
+      S("cl-butchery", "Driven to Butchery", 1, "Strategic Ploy", ["mine:shooting", "mine:charge"], "during",
+        "Your Shooting phase or your Charge phase.",
+        "One DESTROYER CULT unit.",
+        "Until the end of the turn, it is eligible to shoot and declare a charge in a turn in which it Advanced.", { limit: "turn" }),
+      S("cl-spreading", "Spreading Madness", 1, "Battle Tactic", ["mine:charge"], "during",
+        "Your Charge phase.",
+        "One NECRONS unit (not MONSTER or VEHICLE) that hasn't declared a charge this phase.",
+        "Until the end of the phase, when it declares a charge, +2 to the Charge roll if one or more of its charge targets are within Engagement Range of your other units."),
+      S("cl-aggression", "Unnatural Aggression", 2, "Strategic Ploy", ["opp:charge"], "end",
+        "End of your opponent's Charge phase.",
+        "One NECRONS unit (not MONSTER or VEHICLE) within 6\" of enemy units that could declare a charge against them if it were your Charge phase.",
+        "Your unit declares a charge that targets only those enemy units, and you resolve it.")
+    ]),
+
+  D("pantheon", "Pantheon of Woe",
+    { name: "Cosmic Distortion", text: "NECRONS MONSTERS have a 6\" Distortion Fields aura: enemy units within it are unravelling, and attacks against unravelling units get +1 AP. Each NECRONS MONSTER also has its Necrodermal Binding (listed with the enhancements), which costs extra points." },
+    [
+      R("r-distort", "Cosmic Distortion", ["any:any"], "start", "Start of phase: a NECRONS MONSTER can suffer 3 mortal wounds to extend its Distortion Fields to 9\" until the end of the phase.")
+    ],
+    [
+      E("e-singularity", "Singularity Matrix", "C'TAN SHARD OF THE DECEIVER", "Lord of Deceit (Aura): once per turn, when your opponent targets one of their units within 12\" of this model with a Stratagem, you can make that use cost 1CP more.", { slots: ["any:any"], w: "react", limit: "turn" }),
+      E("e-goad", "Quantum Goad", "C'TAN SHARD OF THE NIGHTBRINGER", "It can declare a charge in a turn it Advanced."),
+      E("e-damper", "Animus Damper", "C'TAN SHARD OF THE VOID DRAGON", "Start of your opponent's Shooting phase: pick one enemy VEHICLE unit the bearer can see. It takes a Leadership test; until the end of the phase its attacks get -1 to Hit, and also -1 to Wound if it failed.", { slots: ["opp:shooting"], w: "start", limit: "turn" }),
+      E("e-tether", "Reletavistic Tether", "TRANSCENDENT C'TAN", "In your turn, when it makes an ingress or Advance move with Transdimensional Displacement, it can end more than 6\" from all enemy units (instead of more than 8\"). If it ends within 8\" of an enemy unit, it can't declare a charge this turn. Required for every TRANSCENDENT C'TAN if you have more than one.", { slots: ["mine:movement"], w: "react" })
+    ],
+    [
+      S("pw-cascade", "Disharmonisation Cascade", 1, "Epic Deed", ["any:any"], "react",
+        "Any phase, just after one of your NECRONS MONSTER models is destroyed, before its Deadly Demise roll.",
+        "That model (usable even though it was just destroyed).",
+        "Its Deadly Demise inflicts mortal wounds on a 3+ instead of a 6 until the end of the phase."),
+      S("pw-erosion", "Molecular Erosion", 1, "Strategic Ploy", ["any:command"], "during",
+        "Command phase (either player's).",
+        "One NECRONS MONSTER unit.",
+        "One unravelling enemy unit it can see takes a Battle-shock test at -1; if it fails, it suffers D3+1 mortal wounds.", { limit: "round" }),
+      S("pw-transmog", "Mass Transmogrification", 1, "Epic Deed", ["mine:shooting", "any:fight"], "react",
+        "Your Shooting phase or the Fight phase, just after one of your NECRONS MONSTER units destroys an enemy unit.",
+        "One friendly NECRONS unit (not MONSTER) within 6\".",
+        "If the destroyed unit was unravelling at the start of the phase, your unit's Reanimation Protocols activate.", { limit: "turn" }),
+      S("pw-entrophasic", "Entrophasic Aura Targeting", 1, "Battle Tactic", ["mine:shooting", "any:fight"], "during",
+        "Your Shooting phase or the Fight phase.",
+        "One NECRONS unit (not MONSTER) that hasn't shot or fought this phase.",
+        "Re-roll Hit rolls of 1; against unravelling targets, also re-roll Wound rolls of 1."),
+      S("pw-chrono", "Chronodistortion", 1, "Battle Tactic", ["any:fight"], "react",
+        "Fight phase, just after an enemy unit has selected its targets.",
+        "One NECRONS unit that was selected as a target.",
+        "Until the end of the phase, each time a model in your unit is destroyed before it has fought, roll a D6 (+1 if the attacking unit is unravelling): on a 4+ it fights after the attacking unit, then is removed."),
+      S("pw-melding", "Phase Melding", 1, "Strategic Ploy", ["opp:movement"], "react",
+        "Your opponent's Movement phase, when an unravelling enemy unit is selected to Fall Back.",
+        "One NECRONS unit in Engagement Range of it.",
+        "When it Falls Back, every model in it must take a Desperate Escape test, with -1 to each test if that unit is Battle-shocked.")
+    ]),
+
+  D("hand", "Hand of the Dynasty",
+    { name: "Hypermotility Protocols", text: "Ranged attacks by IMMORTALS and NECRON WARRIORS have [ASSAULT], and Advancing doesn't stop them starting Actions." },
+    [],
+    [
+      E("e-sentinels", "Enlivened Sentinels", "NECRON WARRIORS unit (upgrade)", "The unit has Scouts 5\"."),
+      E("e-dominion", "Tools of Dominion", "IMMORTALS unit (upgrade)", "The unit's ranged attacks have [RAPID FIRE 1].")
+    ],
+    [
+      S("hd-dominance", "Dominance Protocols", 1, "Detachment", ["any:command"], "during",
+        "Command phase (either player's).",
+        "One IMMORTALS unit.",
+        "+1 OC until the end of the turn."),
+      S("hd-will", "Will of the Conqueror", 1, "Detachment", ["mine:movement"], "end",
+        "End of your Movement phase.",
+        "One IMMORTALS or NECRON WARRIORS unit that controls an objective.",
+        "That objective becomes secured for you."),
+      S("hd-nano", "Nanosaturation", 1, "Detachment", ["opp:shooting"], "react",
+        "Your opponent's Shooting phase, just after an enemy unit that targeted your IMMORTALS or NECRON WARRIORS has shot.",
+        "The unit that was shot at.",
+        "It shoots back using snap shooting, targeting only that enemy unit.")
+    ]),
+
+  D("skyshroud", "Skyshroud Spearhead",
+    { name: "Transdimensional Deployment", text: "TOMB BLADES have Deep Strike. If a TOMB BLADES unit made an ingress move this turn, its ranged attacks add 1 to Hit rolls." },
+    [
+      R("r-skyshroud", "Transdimensional Deployment", ["mine:shooting"], "during", "TOMB BLADES that made an ingress move this turn: +1 to Hit with ranged attacks.")
+    ],
+    [
+      E("e-recursive", "Recursive Reanimation", "TOMB BLADES unit (upgrade)", "+1 to the unit's Reanimation Protocols rolls."),
+      E("e-deepening", "Deepening Madness", "DESTROYER CULT MOUNTED unit (upgrade)", "The unit's ranged attacks have [ASSAULT].")
+    ],
+    [
+      S("ss-strafing", "Omnilocked Strafing", 1, "Detachment", ["mine:movement"], "during",
+        "Your Movement phase, when one of your NECRONS MOUNTED units is selected to Fall Back.",
+        "That unit.",
+        "It can still shoot this turn after Falling Back."),
+      S("ss-swift", "Swift as Death", 1, "Detachment", ["opp:movement"], "react",
+        "Your opponent's Movement phase, when an enemy unit ends a move within 8\" of one of your unengaged NECRONS MOUNTED units.",
+        "That NECRONS MOUNTED unit.",
+        "Your unit makes a Normal move of up to D3+3\"."),
+      S("ss-evasive", "Evasive Protocols", 1, "Detachment", ["opp:shooting"], "react",
+        "Your opponent's Shooting phase, when an enemy unit targets one of your NECRONS MOUNTED units.",
+        "That NECRONS MOUNTED unit.",
+        "Ranged attacks with a Strength higher than its Toughness get -1 to Wound.")
+    ]),
+
+  D("phaeron", "The Phaeron's Armoury",
+    { name: "Empowered Engines", text: "NECRONS TITANIC FLY units get +6\" Move." },
+    [
+      R("r-engines", "Empowered Engines", ["mine:movement"], "during", "NECRONS TITANIC FLY units: +6\" Move.")
+    ],
+    [
+      E("e-reloc", "Relocational Optimiser", "NECRONS model", "If the bearer's unit was set up through a Monolith's Eternity Gate this turn, its ranged attacks gain [LETHAL HITS] or [SUSTAINED HITS 1].", { slots: ["mine:shooting"], w: "during" }),
+      E("e-shroud", "Mortality Shroud (Aura)", "OBELISK (upgrade)", "In your opponent's Battle-shock step, their units within 8\" that are below Starting Strength must take a Battle-shock test.", { slots: ["opp:command"], w: "during" })
+    ],
+    [
+      S("pa-quantumweave", "Subsurface Quantumweave", 1, "Detachment", ["opp:shooting", "any:fight"], "react",
+        "Your opponent's Shooting phase or the Fight phase, when an enemy unit targets one of your NECRONS TITANIC FLY units.",
+        "That unit.",
+        "Worsen the AP of attacks against it by 1 until the enemy unit has finished attacking."),
+      S("pa-pulse", "Particle Pulse", 1, "Detachment", ["mine:shooting"], "start",
+        "Start of your Shooting phase.",
+        "One of your NECRONS TITANIC FLY units.",
+        "Pick one visible enemy unit within 12\" of your unit: that enemy unit has +3\" detection range."),
+      S("pa-storm", "Cosmic Storm", 1, "Detachment", ["mine:shooting"], "react",
+        "Your Shooting phase, when one of your OBELISK or TESSERACT VAULT units is selected to shoot.",
+        "That unit.",
+        "Its Tesla Sphere weapons get +1 AP.")
+    ])
+];
+
+/* Detachment Points (11th ed.), Unique tags and Force Dispositions, from Wahapedia's Necrons page. */
+const DET_META = {
+  awakened:     { dp: 3, unique: "DYNASTY",    fd: ["Take and Hold", "Priority Assets"] },
+  annihilation: { dp: 2, unique: null,         fd: ["Purge the Foe"] },
+  canoptek:     { dp: 2, unique: null,         fd: ["Take and Hold"] },
+  obeisance:    { dp: 2, unique: null,         fd: ["Disruption"] },
+  hypercrypt:   { dp: 2, unique: "HYPERCRYPT", fd: ["Reconnaissance"] },
+  starshatter:  { dp: 3, unique: null,         fd: ["Priority Assets", "Purge the Foe"] },
+  cryptek:      { dp: 2, unique: null,         fd: ["Priority Assets"] },
+  cursed:       { dp: 2, unique: null,         fd: ["Purge the Foe"] },
+  pantheon:     { dp: 2, unique: null,         fd: ["Disruption"] },
+  hand:         { dp: 1, unique: "DYNASTY",    fd: ["Take and Hold"] },
+  skyshroud:    { dp: 1, unique: null,         fd: ["Reconnaissance"] },
+  phaeron:      { dp: 1, unique: "HYPERCRYPT", fd: ["Priority Assets"] }
+};
+DETACHMENTS.forEach(d => Object.assign(d, DET_META[d.id]));
+const SIZES = [
+  { id: "incursion", label: "Incursion", pts: "1,000 pts", dp: 2, hyper: 1 },
+  { id: "strike", label: "Strike Force", pts: "2,000 pts", dp: 3, hyper: 2 },
+  { id: "onslaught", label: "Onslaught", pts: "3,000 pts", dp: null, hyper: 3 }
+];
+
+const ARMY_RULE = R("army-rp", "Reanimation Protocols", ["mine:command"], "end",
+  "Each of your units with this ability that is on the battlefield heals D3 wounds (this can bring destroyed models back).",
+  { src: "Army rule" });
+
+/* Core turn steps (own words). */
+const STEPS = [
+  R("st-cmd-start", "Start of phase", ["mine:command"], "start", "Resolve abilities that trigger at the start of your Command phase."),
+  R("st-cmd-cp", "Command points", ["any:command"], "during", "Both players gain 1CP. The tracker adds yours when you tap Next, unless you turned that off under Army > Game."),
+  R("st-cmd-shock", "Battle-shock", ["mine:command"], "during", "Test each of your units that is at or below Half-strength or already Battle-shocked: roll 2D6, passing on a result equal to or higher than its Leadership. A Battle-shocked unit has OC '–', can't be targeted by your Stratagems and can't start or complete Actions. A Battle-shocked unit that passes recovers."),
+  R("st-cmd-oppshock", "Battle-shock", ["opp:command"], "during", "Your opponent tests their units. Watch for abilities that force extra tests."),
+  R("st-mov", "Moves", ["mine:movement"], "during", "Move each unit: Normal move, Advance (+D6\"), Fall Back (engaged units only) or Remain Stationary."),
+  R("st-mov-res", "Reserves", ["mine:movement"], "during", "From battle round 2, units in Strategic Reserves can arrive with an ingress move: wholly within 6\" of a battlefield edge, more than 8\" from enemy units, and not in the enemy deployment zone before round 3. Units that still haven't arrived at the end of round 3 are destroyed."),
+  R("st-mov-opp", "Enemy moves", ["opp:movement"], "react", "Watch enemy Normal, Advance and Fall Back moves: several reactions trigger just after a move ends."),
+  R("st-mov-oppend", "End of phase", ["opp:movement"], "end", "Fire Overwatch and Rapid Ingress window."),
+  R("st-shoot", "Shooting", ["mine:shooting"], "during", "Pick units to shoot one at a time. A unit that Advanced can only fire [ASSAULT] weapons; an engaged unit can only make close-quarters shots ([CLOSE-QUARTERS] weapons, or MONSTER/VEHICLE units). Benefit of Cover worsens the attacker's BS by 1."),
+  R("st-shoot-opp", "Enemy shooting", ["opp:shooting"], "react", "Defensive window: just after an enemy unit picks its targets, and again after it has shot."),
+  R("st-charge", "Charges", ["mine:charge"], "during", "Declare a charge with a unit within 12\" of an enemy unit (not one that is engaged or that Advanced or Fell Back this turn, unless a rule allows it), roll 2D6, then pick charge targets within 12\" and within the rolled distance. Charging models have Fights First until the end of the turn."),
+  R("st-charge-opp", "Enemy charges", ["opp:charge"], "react", "Watch for charge declarations; reactions trigger just after a charge is declared."),
+  R("st-charge-oppend", "End of phase", ["opp:charge"], "end", "Heroic Intervention window."),
+  R("st-fight-pile", "Pile in", ["any:fight"], "start", "Both players pile in up to 3\", the active player first."),
+  R("st-fight-order", "Fight order", ["any:fight"], "during", "Fights First units fight first, players alternating with the active player starting. Then the remaining combats, players alternating."),
+  R("st-fight-cons", "Consolidate", ["any:fight"], "end", "Eligible units consolidate up to 3\"."),
+  R("st-end", "Coherency", ["any:end"], "end", "End of Turn step (in each player's turn): a unit that is out of coherency removes models until it is back in coherency."),
+  R("st-end-score", "Scoring", ["any:end"], "end", "Check your mission's scoring for this turn.")
+].map(s => Object.assign(s, { src: "Core rules" }));
+
+/* Necron units with timed abilities (11th-ed datasheets on Wahapedia). */
+const UNITS = [
+  R("u-technomancer", "Technomancer", ["mine:movement"], "end", "End of your Movement phase: one friendly NECRONS model within 6\" regains up to D3 lost wounds (each model once per turn)."),
+  R("u-orb", "Resurrection Orb (Catacomb Command Barge)", ["any:any"], "end", "End of any phase: pick up to one friendly NECRONS INFANTRY or MOUNTED unit within 6\" of the Barge. It resurrects: its Reanimation Protocols activate and heal D6 wounds instead of D3. Only one unit can resurrect per turn.", { limit: "battle" }),
+  R("u-orb-ovl", "Resurrection Orb (Overlord)", ["any:any"], "end", "End of any phase: the Overlord's own unit resurrects: its Reanimation Protocols activate and heal D6 wounds instead of D3. Only one unit can resurrect per turn.", { limit: "battle" }),
+  R("u-ovl-will", "Overlord: My Will Be Done", ["any:any"], "react", "When this unit is targeted with a Stratagem, that use costs 1CP less. Only one unit with this ability can use it each battle round.", { limit: "round" }),
+  R("u-warden", "Royal Warden: Engrammatic Logic", ["any:any"], "start", "Start of any phase: one Battle-shocked NECRONS unit within 12\" is no longer Battle-shocked.", { limit: "battle" }),
+  R("u-hexmark-ow", "Hexmark Destroyer: Inescapable Death", ["opp:movement"], "end", "Fire Overwatch on this unit costs 0CP (even if Overwatch was already used this phase) and hits on unmodified 2+.", { limit: "turn" }),
+  R("u-hexmark-mte", "Hexmark Destroyer: Multi-threat Eliminator", ["opp:shooting"], "react", "After an enemy unit has shot a NECRONS unit within 3\" of a Hexmark, one Hexmark within 3\" of that target can shoot the enemy unit as if it were your Shooting phase (only that unit, and only if it is an eligible target).", { limit: "turn" }),
+  R("u-zahndrekh", "Nemesor Zahndrekh (Legends): Counter-tactics", ["any:any"], "react", "Just after your opponent uses a Stratagem: it costs them 1CP more for the rest of the battle.", { limit: "battle" }),
+  R("u-warriors", "Necron Warriors: Their Number is Legion", ["mine:command"], "end", "Each time their Reanimation Protocols activate (also from stratagems such as Protocol of the Undying Legions), you can re-roll the dice for wounds reanimated."),
+  R("u-lord", "Lord (Legends): The Lord's Will", null, null, "While leading a unit, that unit can be targeted with Stratagems even when Battle-shocked.")
+];
+
+/* ---------------- lookup tables ---------------- */
+const DET = Object.fromEntries(DETACHMENTS.map(d => [d.id, d]));
+const ALL_STRATS = {};
+CORE.forEach(s => { ALL_STRATS[s.id] = Object.assign(s, { srcName: "Core" }); });
+DETACHMENTS.forEach(d => d.strats.forEach(s => { ALL_STRATS[s.id] = Object.assign(s, { srcName: d.name, det: d.id }); }));
+
+/* ===================================================================== */
+const KEY = "necron-turn-checklist-v1";
+const store = {
+  get() { try { return JSON.parse(localStorage.getItem(KEY)); } catch (e) { return null; } },
+  set(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* storage unavailable: keep in memory */ } }
+};
+
+function freshGame(prev) {
+  const keep = prev || {};
+  return {
+    v: 1,
+    dets: Array.isArray(keep.dets) ? keep.dets.filter(id => DET[id]) : ["awakened"],
+    enh: keep.enh || [],
+    units: keep.units || [],
+    custom: keep.custom || [],
+    settings: Object.assign({ first: "mine", autoCP: true, size: "strike", dp: 3 }, keep.settings || {}),
+    mig: keep.mig || { orb: true },
+    round: 1,
+    turn: (keep.settings && keep.settings.first) || "mine",
+    phase: "command",
+    cp: 1,
+    used: {}, done: {}, battle: {}, perTurn: {}, perRound: {},
+    log: [{ at: "R1 · " + ((keep.settings && keep.settings.first) === "opp" ? "Opponent's" : "Your") + " Command", text: "Game started · +1CP" }],
+    view: keep.view || "game",
+    listTurn: "mine"
+  };
+}
+
+function migrate(st) {
+  if (!Array.isArray(st.dets)) { st.dets = st.det && DET[st.det] ? [st.det] : ["awakened"]; delete st.det; }
+  st.settings = Object.assign({ first: "mine", autoCP: true, size: "strike", dp: 3 }, st.settings || {});
+  st.mig = st.mig || {};
+  if (!st.mig.orb) { /* Resurrection Orb was one entry for Overlord + Command Barge; it is now two */
+    if (Array.isArray(st.units) && st.units.includes("u-orb") && !st.units.includes("u-orb-ovl")) st.units.push("u-orb-ovl");
+    st.mig.orb = true;
+  }
+  return st;
+}
+let state = store.get();
+if (!state || state.v !== 1) state = freshGame();
+migrate(state);
+const undoStack = [];
+
+/* ---------------- helpers ---------------- */
+const other = t => (t === "mine" ? "opp" : "mine");
+const phaseKey = () => `${state.round}|${state.turn}|${state.phase}`;
+const turnKey = () => `${state.round}|${state.turn}`;
+const inList = (map, k, id) => !!(map[k] && map[k].includes(id));
+const addTo = (map, k, id) => { (map[k] = map[k] || []).includes(id) || map[k].push(id); };
+const removeFrom = (map, k, id) => { if (map[k]) map[k] = map[k].filter(x => x !== id); };
+const phaseLabel = id => PHASES.find(p => p.id === id).label;
+
+function esc(s) {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+const CAPS = /\b([A-Z][A-Z'’\-]+(?: (?:OF THE |OF )?[A-Z][A-Z'’\-]+)*)\b/g;
+function fmt(s) {
+  return esc(s).split(/(\[[^\]]+\])/g).map((part, i) =>
+    i % 2 ? `<span class="ab">${part}</span>`
+          : part.replace(CAPS, m => (m.length <= 2 ? m : `<span class="kw">${m}</span>`))
+  ).join("");
+}
+
+function slotMatches(slot, turn, phase) {
+  const [t, p] = slot.split(":");
+  if (t !== "any" && t !== turn) return false;
+  if (p === "any") return phase !== "end";
+  return p === phase;
+}
+const matches = (it, turn, phase) => Array.isArray(it.slots) && it.slots.some(s => slotMatches(s, turn, phase));
+const byWindow = (a, b) => (WIN[a.w].o - WIN[b.w].o) || ((a.type === "Core") - (b.type === "Core")) || ((a.cp || 0) - (b.cp || 0));
+
+const selDets = () => DETACHMENTS.filter(d => state.dets.includes(d.id));
+const dpUsed = () => selDets().reduce((n, d) => n + d.dp, 0);
+const detLabel = () => { const ds = selDets(); return ds.length ? ds.map(d => d.name).join(" + ") : "No detachment"; };
+function hyperCount() {
+  const size = SIZES.find(z => z.id === state.settings.size) || SIZES[1];
+  return size.hyper + (state.enh.includes("e-overseer") && state.dets.includes("hypercrypt") ? 1 : 0);
+}
+const dyn = t => String(t).replace("{hyper}", hyperCount());
+function armyProblems() {
+  const ds = selDets(), probs = [];
+  const seen = {};
+  ds.forEach(d => { if (!d.unique) return; if (seen[d.unique]) probs.push(`${seen[d.unique].name} and ${d.name} share the Unique tag ${d.unique}, so they can't be taken together.`); else seen[d.unique] = d; });
+  const used = dpUsed();
+  if (used > state.settings.dp) probs.push(`Your detachments cost ${used} DP but your budget is ${state.settings.dp} DP.`);
+  return probs;
+}
+function blockReason(d) {
+  if (state.dets.includes(d.id)) return "";
+  const left = state.settings.dp - dpUsed();
+  const clash = d.unique && selDets().find(x => x.unique === d.unique);
+  if (clash) return `Shares the Unique tag ${d.unique} with ${clash.name}.`;
+  if (d.dp > left) return `Costs ${d.dp} DP: you have ${Math.max(0, left)} DP left.`;
+  return "";
+}
+/* Keyword-gated core stratagems (Explosives, Smokescreen) stay out of the in-game list: no Necron unit has those keywords. */
+function stratPool() { return CORE.filter(s => !s.keyword).concat(...selDets().map(d => d.strats)); }
+
+function stratStatus(s) {
+  if (inList(state.used, phaseKey(), s.id)) return "Used this phase";
+  if (s.limit === "battle" && state.battle[s.id]) return "Used this battle";
+  if (s.limit === "turn" && inList(state.perTurn, turnKey(), s.id)) return "Used this turn";
+  if (s.limit === "round" && inList(state.perRound, String(state.round), s.id)) return "Used this round";
+  return null;
+}
+
+function reminderDone(r) {
+  if (r.limit === "battle") return !!state.battle[r.id];
+  if (r.limit === "round") return inList(state.perRound, String(state.round), r.id);
+  if (r.limit === "turn") return inList(state.perTurn, turnKey(), r.id);
+  return inList(state.done, phaseKey(), r.id);
+}
+
+function timedReminders(turn, phase) {
+  const list = [];
+  STEPS.forEach(s => matches(s, turn, phase) && list.push(s));
+  if (matches(ARMY_RULE, turn, phase)) list.push(ARMY_RULE);
+  selDets().forEach(det => {
+    det.ruleReminders.forEach(r => matches(r, turn, phase) && list.push(Object.assign({ src: "Detachment rule" }, r)));
+    det.enh.filter(e => state.enh.includes(e.id) && e.slots).forEach(e => matches(e, turn, phase) && list.push(Object.assign({ src: "Enhancement" }, e)));
+  });
+  UNITS.filter(u => state.units.includes(u.id) && u.slots).forEach(u => matches(u, turn, phase) && list.push(Object.assign({ src: "Unit" }, u)));
+  state.custom.forEach(c => matches(c, turn, phase) && list.push(Object.assign({ src: "Your reminder" }, c)));
+  return list.sort(byWindow);
+}
+
+function limitTag(limit) {
+  if (!limit) return "";
+  const t = { battle: "Once per battle", turn: "Once per turn", round: "Once per round" }[limit];
+  return `<span class="tag limit">${t}</span>`;
+}
+const verifyTag = it => (it.verify ? `<span class="tag warn" title="I couldn't confirm the exact wording: check Wahapedia">Check wording</span>` : "");
+
+/* ---------------- mutations ---------------- */
+function snapshot() {
+  const copy = Object.assign({}, state); delete copy.view; delete copy.listTurn; delete copy.stratMode;
+  undoStack.push(JSON.stringify(copy));
+  if (undoStack.length > 50) undoStack.shift();
+}
+function save() { store.set(state); }
+function mutate(fn) { snapshot(); fn(); save(); render(); }
+function undo() {
+  if (!undoStack.length) { toast("Nothing to undo"); return; }
+  const view = state.view, listTurn = state.listTurn, stratMode = state.stratMode;
+  state = Object.assign(JSON.parse(undoStack.pop()), { view, listTurn, stratMode });
+  save(); render(); toast("Undone");
+}
+function addLog(text) {
+  const who = state.turn === "mine" ? "Your" : "Opp's";
+  state.log.unshift({ at: `R${state.round} · ${who} ${phaseLabel(state.phase)}`, text });
+  state.log = state.log.slice(0, 60);
+}
+
+function nextInfo() {
+  const i = PHASES.findIndex(p => p.id === state.phase);
+  if (i < PHASES.length - 1) return { label: PHASES[i + 1].label, done: false };
+  const first = state.settings.first;
+  if (state.turn === first) return { label: other(first) === "mine" ? "Your turn" : "Opp's turn", done: false };
+  if (state.round >= 5) return { label: "Battle over", done: true };
+  return { label: `Round ${state.round + 1}`, done: false };
+}
+
+function nextPhase() {
+  const i = PHASES.findIndex(p => p.id === state.phase);
+  if (i < PHASES.length - 1) { state.phase = PHASES[i + 1].id; return; }
+  const first = state.settings.first;
+  if (state.turn === first) state.turn = other(first);
+  else {
+    if (state.round >= 5) { toast("Battle round 5 is over: the battle has ended"); return; }
+    state.round += 1; state.turn = first;
+  }
+  state.phase = "command";
+  if (state.settings.autoCP) { state.cp += 1; addLog("+1CP (Command phase)"); toast(`+1CP for the Command phase · ${state.cp}CP`); }
+  window.scrollTo(0, 0);
+}
+
+function useStrat(id) {
+  const s = ALL_STRATS[id];
+  if (!s || stratStatus(s)) return;
+  if (state.cp < s.cp) { toast(`Not enough CP: ${s.name} costs ${s.cp}CP`); return; }
+  state.cp -= s.cp;
+  addTo(state.used, phaseKey(), id);
+  if (s.limit === "battle") state.battle[id] = true;
+  if (s.limit === "turn") addTo(state.perTurn, turnKey(), id);
+  if (s.limit === "round") addTo(state.perRound, String(state.round), id);
+  addLog(`${s.name} (−${s.cp}CP)`);
+  toast(`${s.name}: −${s.cp}CP · ${state.cp}CP left`);
+}
+
+function toggleReminder(id, limit, on) {
+  if (limit === "battle") { if (on) state.battle[id] = true; else delete state.battle[id]; }
+  else if (limit === "turn") { on ? addTo(state.perTurn, turnKey(), id) : removeFrom(state.perTurn, turnKey(), id); }
+  else if (limit === "round") { on ? addTo(state.perRound, String(state.round), id) : removeFrom(state.perRound, String(state.round), id); }
+  else { on ? addTo(state.done, phaseKey(), id) : removeFrom(state.done, phaseKey(), id); }
+}
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+/* ---------------- rendering ---------------- */
+function renderTracker() {
+  const n = nextInfo();
+  return `
+  <div class="tr-top">
+    <div class="seg" role="group" aria-label="Whose turn">
+      <button data-act="turn" data-turn="mine" aria-pressed="${state.turn === "mine"}">My turn</button>
+      <button data-act="turn" data-turn="opp" aria-pressed="${state.turn === "opp"}">Opponent</button>
+    </div>
+    <button class="det-chip" data-act="view" data-view="army" title="Change detachments">${dpUsed()}/${state.settings.dp} DP · ${esc(detLabel())}</button>
+  </div>
+  <div class="tr-controls">
+    <div class="stepper" role="group" aria-label="Battle round">
+      <span class="lbl">Round</span>
+      <button data-act="round" data-d="-1" aria-label="Previous battle round">−</button>
+      <output class="num" aria-live="polite">${state.round}</output><span class="of">/5</span>
+      <button data-act="round" data-d="1" aria-label="Next battle round">+</button>
+    </div>
+    <div class="stepper cp" role="group" aria-label="Command points">
+      <span class="lbl">CP</span>
+      <button data-act="cp" data-d="-1" aria-label="Remove 1 CP">−</button>
+      <output class="num" aria-live="polite">${state.cp}</output>
+      <button data-act="cp" data-d="1" aria-label="Add 1 CP">+</button>
+    </div>
+  </div>
+  <div class="tr-phases">
+    <div class="phase-list" role="group" aria-label="Phase">
+      ${PHASES.map(p => `<button data-act="phase" data-phase="${p.id}" ${p.id === state.phase ? 'aria-current="step"' : ""}>${p.label}</button>`).join("")}
+    </div>
+    <button class="next" data-act="next" ${n.done ? "disabled" : ""} aria-label="Go to ${esc(n.label)}">${esc(n.label)} ›</button>
+  </div>`;
+}
+
+function srcClass(s) {
+  if (s.type === "Core") return "src-core";
+  const i = selDets().findIndex(d => d.id === s.det);
+  return i >= 0 ? `src-${i + 1}` : "";
+}
+let sheetId = null;
+
+function slotChip(sl) {
+  const [t, p] = sl.split(":");
+  if (p === "any") return t === "any" ? "Any phase" : (t === "mine" ? "Any phase of your turn" : "Any phase of opponent's turn");
+  const who = { mine: "Your", opp: "Opponent's", any: "Either player's" }[t];
+  return p === "end" ? `End of ${t === "mine" ? "your" : t === "opp" ? "opponent's" : "either"} turn` : `${who} ${phaseLabel(p)}`;
+}
+
+function stratCard(s, opts) {
+  const status = opts.interactive ? stratStatus(s) : null;
+  const short = opts.interactive && !status && state.cp < s.cp;
+  const btn = !opts.interactive ? "" :
+    status ? `<button class="use" disabled>${status}</button>` :
+    short ? `<button class="use" disabled>Need ${s.cp}CP</button>` :
+    `<button class="use" data-act="use" data-id="${s.id}">Use · ${s.cp}CP</button>`;
+  const isCore = s.type === "Core";
+  const typeLine = isCore ? "Core stratagem · every army" : `${s.type === "Detachment" ? "Detachment stratagem" : s.type} · ${esc(s.srcName)}`;
+  return `
+  <article class="strat ${isCore ? "core" : srcClass(s)} ${status ? "is-used" : ""}">
+    <header><span class="cpb">${s.cp}CP</span><h3>${esc(s.name)}</h3>${isCore ? `<span class="tag core">Core</span>` : ""}${limitTag(s.limit)}${verifyTag(s)}</header>
+    <p class="meta">${typeLine}</p>
+    ${opts.showSlots ? `<p class="slots">${s.slots.map(sl => `<span class="tag">${esc(slotChip(sl))}</span>`).join("")}</p>` : ""}
+    <p class="when"><b>When</b>${fmt(s.when)}</p>
+    <p><b>Target</b>${fmt(s.target)}</p>
+    <p><b>Effect</b>${fmt(s.effect)}</p>
+    ${s.restr ? `<p><b>Restriction</b>${fmt(s.restr)}</p>` : ""}
+    ${s.keyword ? `<p class="kwnote"><b>Needs</b>units with the ${fmt(s.keyword)} keyword. No Necron unit has it, so it is hidden in the Game tab and the Overview.</p>` : ""}
+    <footer>${isCore ? "<span></span>" : `<a href="${WAHA}" target="_blank" rel="noopener">Full text on Wahapedia ↗</a>`}${btn}</footer>
+  </article>`;
+}
+
+function groupedCards(list, opts) {
+  const groups = {};
+  list.forEach(s => (groups[s.w] = groups[s.w] || []).push(s));
+  return Object.keys(WIN).filter(w => groups[w]).map(w => `
+    <h3 class="win">${state.phase === "end" && opts.interactive ? "End of turn" : WIN[w].label}</h3>
+    <div class="cards">${groups[w].sort(byWindow).map(s => stratCard(s, opts)).join("")}</div>`).join("");
+}
+
+function renderGame() {
+  const dets = selDets();
+  const reminders = timedReminders(state.turn, state.phase);
+  const strats = stratPool().filter(s => matches(s, state.turn, state.phase)).sort(byWindow);
+  const doneCount = reminders.filter(reminderDone).length;
+  const who = state.turn === "mine" ? "Your" : "Opponent's";
+  const title = state.phase === "end"
+    ? `End of <span class="who">${state.turn === "mine" ? "your" : "your opponent's"}</span> turn`
+    : `<span class="who">${who}</span> ${phaseLabel(state.phase)} phase`;
+  const available = strats.filter(s => !stratStatus(s) && state.cp >= s.cp).length;
+  const nCore = strats.filter(s => s.type === "Core").length;
+
+  const checks = reminders.length ? `<ul class="checks">${reminders.map(r => {
+    const on = reminderDone(r);
+    const usedNote = on && r.limit === "battle" ? `<span class="tag used">Used</span>` : "";
+    const cid = `chk-${r.id}`;
+    return `<li class="check ${on ? "is-done" : ""}">
+      <input type="checkbox" id="${cid}" data-check="${r.id}" data-limit="${r.limit || ""}" ${on ? "checked" : ""}>
+      <label for="${cid}">
+        <span class="src">${esc(r.src)}${r.name ? " · " + esc(r.name) : ""} ${limitTag(r.limit)}${usedNote}${verifyTag(r)}</span>
+        <span class="txt">${fmt(dyn(r.text))}</span>
+      </label></li>`;
+  }).join("")}</ul>` : `<p class="empty">Nothing to do in this step.</p>`;
+
+  const passive = [
+    ...dets.map(d => ({ src: `Detachment rule · ${d.name}`, name: d.rule.name, text: d.rule.text })),
+    ...dets.flatMap(d => d.enh).filter(e => state.enh.includes(e.id) && !e.slots).map(e => ({ src: "Enhancement", name: e.name, text: e.text })),
+    ...UNITS.filter(u => state.units.includes(u.id) && !u.slots).map(u => ({ src: "Unit", name: u.name, text: u.text }))
+  ];
+
+  const log = state.log.slice(0, 8);
+  return `
+  <section class="ctx">
+    <h1>${title}</h1>
+    <p class="sub">Battle round ${state.round} · ${esc(detLabel())} · ${available} stratagem${available === 1 ? "" : "s"} usable now</p>
+    ${armyProblems().map(t => `<p class="overline">${esc(t)} Fix it on the Army tab.</p>`).join("")}
+  </section>
+
+  <section class="block" aria-labelledby="h-check">
+    <h2 id="h-check">Checklist <span class="count">${doneCount}/${reminders.length} done</span></h2>
+    ${checks}
+  </section>
+
+  <section class="block" aria-labelledby="h-strats">
+    <h2 id="h-strats">Stratagems now <span class="count">${strats.length - nCore} detachment · ${nCore} core</span></h2>
+    <p class="rules-note">Each Stratagem once per phase. A unit can be targeted by only one Stratagem per phase. Battle-shocked units can't be targeted.</p>
+    ${strats.length ? groupedCards(strats, { interactive: true }) : `<p class="empty">No stratagems for this step.</p>`}
+  </section>
+
+  <section class="block" aria-labelledby="h-always">
+    <h2 id="h-always">Always on</h2>
+    <ul class="always">${passive.length ? passive.map(p => `<li><span class="src">${esc(p.src)}</span><span class="nm">${esc(p.name)}</span><span>${fmt(dyn(p.text))}</span></li>`).join("") : `<li><span>No detachment picked. Choose one or more on the Army tab.</span></li>`}</ul>
+  </section>
+
+  <section class="block" aria-labelledby="h-log">
+    <div class="log-head"><h2 id="h-log">Game log</h2>
+      <button class="ghost" data-act="undo" ${undoStack.length ? "" : "disabled"}>Undo last change</button></div>
+    <ul class="log">${log.map(l => `<li><span class="at">${esc(l.at)}</span><span>${esc(l.text)}</span></li>`).join("")}</ul>
+  </section>`;
+}
+
+const SHORT_WIN = { start: "Start of phase", during: "", react: "Reaction", end: "End of phase" };
+
+function renderOverview() {
+  const dets = selDets();
+  const pool = CORE.filter(s => !s.keyword).concat(...dets.map(d => d.strats));
+  const rows = [{ id: "any", label: "Any phase" }].concat(PHASES.filter(p => p.id !== "end"));
+  const cols = [{ id: "mine", label: "Your turn" }, { id: "opp", label: "Opponent's turn" }];
+  const inCell = (s, t, p) => s.slots.some(sl => { const [st, sp] = sl.split(":"); return (st === "any" || st === t) && sp === p; });
+  const legend = dets.map((d, i) => `<span class="lg"><span class="sw src-${i + 1}"></span>${esc(d.name)} · ${d.strats.length}</span>`).join("")
+    + `<span class="lg"><span class="sw src-core"></span>Core · ${CORE.filter(s => !s.keyword).length}</span>`;
+  const item = s => {
+    const extra = [SHORT_WIN[s.w], s.limit ? { battle: "once per battle", turn: "once per turn", round: "once per round" }[s.limit] : ""].filter(Boolean).join(" · ");
+    return `<button class="ov-item ${srcClass(s)}" data-act="sheet" data-id="${s.id}" aria-haspopup="dialog">
+      <span class="cpb">${s.cp}CP</span><span class="nm">${esc(s.name)}</span>${extra ? `<span class="wl">${esc(extra)}</span>` : ""}</button>`;
+  };
+  const body = rows.map(r => {
+    const cells = cols.map(c => ({ c, list: pool.filter(s => inCell(s, c.id, r.id)).sort(byWindow) }));
+    const total = new Set(cells.flatMap(x => x.list.map(s => s.id))).size;
+    return `<section class="ov-phase" aria-label="${esc(r.label)}">
+      <h2>${esc(r.label)}${r.id === "any" ? "" : " phase"} <span class="count">${total}</span></h2>
+      <div class="ov-row">${cells.map(({ c, list }) => {
+        const now = state.turn === c.id && (state.phase === r.id || (r.id === "any" && state.phase !== "end"));
+        return `<div class="ov-cell ${now && r.id !== "any" ? "now" : ""}">
+          <div class="ov-cap"><span>${c.label}</span>${now && r.id !== "any" ? `<span class="nowtag">Now</span>` : ""}</div>
+          ${list.length ? list.map(item).join("") : `<div class="ov-none">None</div>`}
+        </div>`;
+      }).join("")}</div>
+    </section>`;
+  }).join("");
+  return `<div class="legend" aria-label="Colour per source">${legend}</div><div class="ov">${body}</div>`;
+}
+
+function renderSheet() {
+  const s = sheetId && ALL_STRATS[sheetId];
+  if (!s) return "";
+  return `<div class="sheet-back" data-act="sheet-close">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(s.name)}">
+      <div class="sheet-head"><span class="meta">${s.slots.map(slotChip).map(esc).join(" · ")}</span>
+        <button class="ghost" id="sheet-close" data-act="sheet-close">Close</button></div>
+      ${stratCard(s, { interactive: false, showSlots: false })}
+    </div></div>`;
+}
+
+function renderStrats() {
+  const mode = state.stratMode === "cards" ? "cards" : "overview";
+  const dets = selDets();
+  const head = `
+  <section class="ctx">
+    <h1>All stratagems</h1>
+    <p class="sub">${dets.length ? esc(detLabel()) + " and the core stratagems." : "Core stratagems only: pick detachments on the Army tab."} ${mode === "overview" ? "Tap one to read it." : ""}</p>
+  </section>
+  <div class="seg neutral" role="group" aria-label="Layout">
+    <button data-act="smode" data-mode="overview" aria-pressed="${mode === "overview"}">Overview</button>
+    <button data-act="smode" data-mode="cards" aria-pressed="${mode === "cards"}">Full cards</button>
+  </div>`;
+  return head + (mode === "overview" ? renderOverview() : renderStratCards());
+}
+
+function renderStratCards() {
+  const order = s => {
+    const [t, p] = s.slots[0].split(":");
+    const pi = p === "any" ? -1 : PHASES.findIndex(x => x.id === p);
+    return pi * 10 + (t === "mine" ? 0 : t === "any" ? 1 : 2) + WIN[s.w].o / 10;
+  };
+  const dets = selDets();
+  const sections = dets.map(d => ({ title: d.name, sub: `${d.dp} DP · Detachment rule: ${d.rule.name}`, list: d.strats }))
+    .concat([{ title: "Core stratagems", sub: "Available to every army. Explosives and Smokescreen need keywords no Necron unit has.", list: CORE }]);
+  const jump = sections.map((sec, i) => `<button class="tag jump" data-act="jump" data-to="sec-${i}">${esc(sec.title)}</button>`).join("");
+  return `
+  <p class="slots">${jump}</p>
+  ${sections.map((sec, i) => `<section class="block" id="sec-${i}">
+    <h2>${esc(sec.title)} <span class="count">${sec.list.length}</span></h2>
+    <p class="hint">${esc(sec.sub)}</p>
+    <div class="cards">${sec.list.slice().sort((a, b) => order(a) - order(b)).map(s => stratCard(s, { interactive: false, showSlots: true })).join("")}</div>
+  </section>`).join("")}`;
+}
+
+function slotText(c) {
+  const [t, p] = c.slots[0].split(":");
+  const tt = { mine: "Your turn", opp: "Opponent's turn", any: "Either turn" }[t];
+  const pp = p === "any" ? "any phase" : phaseLabel(p);
+  return `${tt} · ${pp} · ${WIN[c.w].label.toLowerCase()}${c.limit ? " · once per battle" : ""}`;
+}
+
+function renderArmy() {
+  const dets = selDets(), used = dpUsed(), budget = state.settings.dp, over = used > budget;
+  const pips = Array.from({ length: Math.max(budget, used) }, (_, i) => `<span class="${i < Math.min(used, budget) ? "on" : i >= budget ? "over" : ""}"></span>`).join("");
+  return `
+  <section class="ctx">
+    <h1>Your army</h1>
+    <p class="sub">Pick your detachments and what's in your list. The checklist only shows what applies.</p>
+  </section>
+
+  <section class="block" aria-labelledby="h-size">
+    <h2 id="h-size">Battle size</h2>
+    <div class="seg neutral" role="group" aria-label="Battle size">${SIZES.map(z => `<button data-act="size" data-size="${z.id}" aria-pressed="${state.settings.size === z.id}">${z.label}</button>`).join("")}</div>
+    <div class="setting">
+      <span>Detachment Points to spend<br><span class="sm">${state.settings.size === "onslaught" ? "I couldn't confirm the Onslaught budget: set it to match your mission pack." : "Incursion 2 DP · Strike Force 3 DP"}</span></span>
+      <div class="stepper cp" role="group" aria-label="Detachment Points budget">
+        <button data-act="dp" data-d="-1" aria-label="Lower DP budget">−</button>
+        <output class="num">${budget}</output>
+        <button data-act="dp" data-d="1" aria-label="Raise DP budget">+</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="h-det">
+    <h2 id="h-det">Detachments <span class="count">${used}/${budget} DP used</span></h2>
+    <div class="pips" aria-hidden="true">${pips}</div>
+    ${over ? `<p class="overline">Over budget by ${used - budget} DP. Remove a detachment or raise the DP budget.</p>` : ""}
+    ${armyProblems().filter(t => /Unique/.test(t)).map(t => `<p class="overline">${esc(t)} Remove one of them.</p>`).join("")}
+    <p class="hint">Combine detachments up to your DP budget. You can't take the same one twice, or two that share a Unique tag. You get all of their rules, enhancements and stratagems.</p>
+    <div class="opts">${DETACHMENTS.map(d => {
+      const on = state.dets.includes(d.id), why = blockReason(d);
+      return `
+      <label class="opt ${on ? "on" : ""} ${why ? "off" : ""}" for="det-${d.id}">
+        <input type="checkbox" id="det-${d.id}" data-det="${d.id}" ${on ? "checked" : ""} ${why ? "disabled" : ""}>
+        <span><span class="nm">${esc(d.name)}</span><span class="dp">${d.dp} DP</span>${d.unique ? `<span class="tag">Unique: ${esc(d.unique)}</span>` : ""}
+        <br><span class="sm">${esc(d.rule.name)}: ${fmt(d.rule.text)}</span>
+        <span class="fd">${d.fd.map(f => `<span class="tag">${esc(f)}</span>`).join("")}</span>
+        ${why ? `<span class="why">${esc(why)}</span>` : ""}</span>
+      </label>`;
+    }).join("")}</div>
+  </section>
+
+  <section class="block" aria-labelledby="h-enh">
+    <h2 id="h-enh">Enhancements in your list <span class="count">${state.enh.length} picked</span></h2>
+    <p class="hint">Each unit can have only one enhancement.</p>
+    ${dets.length ? dets.map(d => `
+      <h3 class="win">${esc(d.name)}</h3>
+      <div class="opts">${d.enh.map(e => `
+        <label class="opt ${state.enh.includes(e.id) ? "on" : ""}" for="enh-${e.id}">
+          <input type="checkbox" id="enh-${e.id}" data-enh="${e.id}" ${state.enh.includes(e.id) ? "checked" : ""}>
+          <span><span class="nm">${esc(e.name)}</span> ${limitTag(e.limit)}${verifyTag(e)}<br><span class="sm">${fmt(e.who)}. ${fmt(e.text)}</span></span>
+        </label>`).join("")}</div>`).join("") : `<p class="empty">Pick a detachment first.</p>`}
+  </section>
+
+  <section class="block" aria-labelledby="h-units">
+    <h2 id="h-units">Units with timed abilities</h2>
+    <p class="hint">Tick the ones in your list and their abilities appear in the right phase.</p>
+    <div class="opts">${UNITS.map(u => `
+      <label class="opt ${state.units.includes(u.id) ? "on" : ""}" for="unit-${u.id}">
+        <input type="checkbox" id="unit-${u.id}" data-unit="${u.id}" ${state.units.includes(u.id) ? "checked" : ""}>
+        <span><span class="nm">${esc(u.name)}</span> ${limitTag(u.limit)}<br><span class="sm">${fmt(u.text)}</span></span>
+      </label>`).join("")}</div>
+  </section>
+
+  <section class="block" aria-labelledby="h-custom">
+    <h2 id="h-custom">Your own reminders <span class="count">${state.custom.length}</span></h2>
+    <p class="hint">For anything else in your list, such as other unit abilities or a plan for a specific turn.</p>
+    <form class="custom-form" id="custom-form" autocomplete="off">
+      <label class="f" for="c-text">Reminder</label>
+      <input type="text" id="c-text" maxlength="160" required placeholder="e.g. Bring the Deathmarks in from Reserves">
+      <div class="f-row">
+        <div><label class="f" for="c-turn">Turn</label>
+          <select id="c-turn"><option value="mine">My turn</option><option value="opp">Opponent's turn</option><option value="any">Either turn</option></select></div>
+        <div><label class="f" for="c-phase">Phase</label>
+          <select id="c-phase">${PHASES.map(p => `<option value="${p.id}">${p.label}</option>`).join("")}<option value="any">Any phase</option></select></div>
+        <div><label class="f" for="c-win">When</label>
+          <select id="c-win">${Object.keys(WIN).map(w => `<option value="${w}" ${w === "during" ? "selected" : ""}>${WIN[w].label}</option>`).join("")}</select></div>
+      </div>
+      <label class="chk" for="c-once"><input type="checkbox" id="c-once"> Once per battle</label>
+      <button type="submit" class="primary">Add reminder</button>
+    </form>
+    ${state.custom.length ? `<ul class="custom-list">${state.custom.map(c => `
+      <li><span>${esc(c.text)}<br><span class="sm">${esc(slotText(c))}</span></span>
+      <button class="ghost" data-act="del-custom" data-id="${c.id}" aria-label="Delete reminder">Delete</button></li>`).join("")}</ul>` : ""}
+  </section>
+
+  <section class="block" aria-labelledby="h-settings">
+    <h2 id="h-settings">Game</h2>
+    <div class="setting"><span>Who takes the first turn</span>
+      <div class="seg neutral" role="group" aria-label="First turn">
+        <button data-act="first" data-turn="mine" aria-pressed="${state.settings.first === "mine"}">Me</button>
+        <button data-act="first" data-turn="opp" aria-pressed="${state.settings.first === "opp"}">Opponent</button>
+      </div></div>
+    <label class="setting" for="autocp"><span>Add 1CP automatically in each Command phase</span>
+      <input type="checkbox" id="autocp" ${state.settings.autoCP ? "checked" : ""} style="width:20px;height:20px;accent-color:var(--mine)"></label>
+    <button class="danger" data-act="newgame" id="newgame">Start a new game</button>
+  </section>
+
+  <section class="about">
+    <p>Rules are summarised in my own words from <a href="${WAHA}" target="_blank" rel="noopener">Wahapedia's Necrons page</a> (11th edition, Necrons rules v2.8.1, October 2026, including Detachment Point costs) and the 11th-edition core rules, and checked point by point against them on 10 November 2026. Rules change with updates, so check the full wording if something looks off. A "Check wording" tag marks any entry that couldn't be confirmed.</p>
+    <p>Lord and Nemesor Zahndrekh are Legends datasheets on Wahapedia, so they usually aren't allowed in matched play.</p>
+    <p>Unofficial tool for personal use. Warhammer 40,000 and its rules belong to Games Workshop. Powered by Wahapedia.</p>
+    <p>Your game is saved in this browser only.</p>
+  </section>`;
+}
+
+function renderTabs() {
+  const tabs = [["game", "Game"], ["strats", "Stratagems"], ["army", "Army"]];
+  return tabs.map(([id, label]) => `<button data-act="view" data-view="${id}" ${state.view === id ? 'aria-current="page"' : ""}>${label}</button>`).join("");
+}
+
+function render() {
+  const focusId = document.activeElement && document.activeElement.id;
+  document.body.dataset.turn = state.turn;
+  document.getElementById("tracker").innerHTML = renderTracker();
+  const main = document.getElementById("main");
+  main.innerHTML = state.view === "army" ? renderArmy() : state.view === "strats" ? renderStrats() : renderGame();
+  document.getElementById("tabbar").innerHTML = renderTabs();
+  if (state.view !== "strats") sheetId = null;
+  document.getElementById("sheet-root").innerHTML = renderSheet();
+  document.body.style.overflow = sheetId ? "hidden" : "";
+  const list = document.querySelector(".phase-list"), cur = list && list.querySelector('[aria-current="step"]');
+  if (cur) list.scrollLeft = Math.max(0, cur.offsetLeft - list.offsetLeft - (list.clientWidth - cur.offsetWidth) / 2);
+  if (focusId) { const el = document.getElementById(focusId); if (el) el.focus({ preventScroll: true }); }
+}
+
+/* ---------------- events ---------------- */
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]");
+  if (!b || b.disabled) return;
+  const act = b.dataset.act;
+  switch (act) {
+    case "view": state.view = b.dataset.view; save(); render(); window.scrollTo(0, 0); break;
+    case "round": mutate(() => { state.round = Math.min(5, Math.max(1, state.round + Number(b.dataset.d))); }); break;
+    case "turn": if (state.turn !== b.dataset.turn) mutate(() => { state.turn = b.dataset.turn; }); break;
+    case "cp": mutate(() => { state.cp = Math.max(0, state.cp + Number(b.dataset.d)); }); break;
+    case "phase": if (state.phase !== b.dataset.phase) mutate(() => { state.phase = b.dataset.phase; if (state.view !== "game") state.view = "game"; }); else if (state.view !== "game") { state.view = "game"; save(); render(); } break;
+    case "next": mutate(() => { nextPhase(); state.view = "game"; }); break;
+    case "use": mutate(() => useStrat(b.dataset.id)); break;
+    case "undo": undo(); break;
+    case "size": mutate(() => {
+      const z = SIZES.find(x => x.id === b.dataset.size);
+      state.settings.size = z.id; if (z.dp) state.settings.dp = z.dp;
+    }); break;
+    case "smode": state.stratMode = b.dataset.mode; save(); render(); break;
+    case "sheet": sheetId = b.dataset.id; render(); { const c = document.getElementById("sheet-close"); if (c) c.focus(); } break;
+    case "sheet-close": if (e.target === b || b.id === "sheet-close") { const back = sheetId; sheetId = null; render(); const o = document.querySelector(`[data-act="sheet"][data-id="${back}"]`); if (o) o.focus({ preventScroll: true }); } break;
+    case "jump": { const el = document.getElementById(b.dataset.to); if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); break; }
+    case "dp": mutate(() => { state.settings.dp = Math.min(9, Math.max(1, state.settings.dp + Number(b.dataset.d))); }); break;
+    case "first": mutate(() => { state.settings.first = b.dataset.turn; }); break;
+    case "del-custom": mutate(() => { state.custom = state.custom.filter(c => c.id !== b.dataset.id); }); break;
+    case "newgame":
+      if (b.classList.contains("armed")) {
+        mutate(() => { state = freshGame(state); state.view = "game"; });
+        toast("New game: round 1, Command phase, 1CP");
+        window.scrollTo(0, 0);
+      } else {
+        b.classList.add("armed"); b.textContent = "Tap again to reset the game";
+        setTimeout(() => { const n = document.getElementById("newgame"); if (n) { n.classList.remove("armed"); n.textContent = "Start a new game"; } }, 3500);
+      }
+      break;
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && sheetId) { const back = sheetId; sheetId = null; render(); const o = document.querySelector(`[data-act="sheet"][data-id="${back}"]`); if (o) o.focus({ preventScroll: true }); }
+});
+
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.dataset.check) mutate(() => toggleReminder(t.dataset.check, t.dataset.limit, t.checked));
+  else if (t.dataset.det) {
+    const d = DET[t.dataset.det];
+    if (t.checked) {
+      const why = blockReason(d);
+      if (why) { t.checked = false; toast(why); return; }
+      mutate(() => { state.dets = state.dets.concat(d.id); });
+      toast(`${d.name} added · ${dpUsed()}/${state.settings.dp} DP`);
+    } else {
+      const ids = d.enh.map(x => x.id);
+      mutate(() => { state.dets = state.dets.filter(x => x !== d.id); state.enh = state.enh.filter(x => !ids.includes(x)); });
+      toast(`${d.name} removed · ${dpUsed()}/${state.settings.dp} DP`);
+    }
+  }
+  else if (t.dataset.enh) mutate(() => { state.enh = t.checked ? state.enh.concat(t.dataset.enh) : state.enh.filter(x => x !== t.dataset.enh); });
+  else if (t.dataset.unit) mutate(() => { state.units = t.checked ? state.units.concat(t.dataset.unit) : state.units.filter(x => x !== t.dataset.unit); });
+  else if (t.id === "autocp") mutate(() => { state.settings.autoCP = t.checked; });
+});
+
+document.addEventListener("submit", e => {
+  if (e.target.id !== "custom-form") return;
+  e.preventDefault();
+  const text = document.getElementById("c-text").value.trim();
+  if (!text) return;
+  const turn = document.getElementById("c-turn").value;
+  const phase = document.getElementById("c-phase").value;
+  const w = document.getElementById("c-win").value;
+  const once = document.getElementById("c-once").checked;
+  mutate(() => {
+    state.custom.push({ id: "c" + Date.now().toString(36), name: "", text, slots: [`${turn}:${phase}`], w, limit: once ? "battle" : null });
+  });
+  toast("Reminder added");
+});
+
+render();
+</script>
+</body>
+</html>
