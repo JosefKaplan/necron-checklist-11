@@ -79,6 +79,17 @@ def main():
         check("data: ids unique, slots and windows valid", not d["problems"], d["problems"])
         check("page asks search engines not to index it (public GitHub Pages site)",
               "noindex" in (pg.get_attribute("meta[name=robots]", "content") or ""))
+        icons = pg.evaluate("""() => Promise.all(['icon', 'apple-touch-icon'].map(rel => {
+          const href = document.querySelector(`link[rel="${rel}"]`)?.href || '';
+          return new Promise(done => {
+            const img = new Image();
+            img.onload = () => done({ rel, inline: href.startsWith('data:image/'), width: img.naturalWidth });
+            img.onerror = () => done({ rel, inline: href.startsWith('data:image/'), width: 0 });
+            img.src = href;
+          });
+        }))""")
+        check("tab and home-screen icons are inline images that load",
+              all(i["inline"] and i["width"] > 0 for i in icons), icons)
 
         # --- game flow, CP and limits ---------------------------------------
         check("starts in round 1, your Command phase, 1CP",
